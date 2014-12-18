@@ -1,0 +1,279 @@
+<!--
+Copyright (c) 2014 David Mulder
+-->
+
+<!--
+
+Material Design: Color picker inspired by <a href="http://www.google.com/design/spec/components/pickers.html">Material Design Pickers</a>
+
+`paper-color-picker` is a color picker dialog that can be used to pick colors.
+
+Example:
+
+    <paper-color-picker id="picker"></paper-color-picker>
+    
+and to open the dialog
+
+    this.$.picker.open();
+
+Shape and colours
+---
+There are three different main configurations the dialog allows, `circle`, `square`
+ or `huebox`. Additionally in the case of `circle` and `square` it can be specified
+ whether the colours should be generated from the `hsv` or `hsl` colour space.
+ 
+    <paper-color-picker shape="square" type="hsl"></paper-color-picker>
+
+@group Paper Elements
+@element paper-color-picker
+@homepage github.io
+-->
+<link href="../polymer/polymer.html" rel="import">
+<link href="../paper-slider/paper-slider.html" rel="import">
+<link href="../paper-dialog/paper-action-dialog.html" rel="import">
+<link href="../paper-button/paper-button.html" rel="import">
+<link href="../paper-input/paper-input.html" rel="import">
+<link href="paper-color-circle.html" rel="import">
+
+<style>
+  html /deep/ .color-picker-dialog::shadow #scroller {
+    
+    padding:0px;
+  }
+  
+  html /deep/ .color-picker-dialog paper-color-circle {
+    width:200px;
+    height:200px;
+  }
+  
+  html /deep/ .color-picker-dialog #container {
+    /*position:absolute;
+    left:0px;
+    top:0px;
+    right:0px;
+    bottom:0px;*/
+  }
+  
+  html /deep/ .color-picker-dialog #preview {
+    padding:20px;
+    text-align:center;
+  }
+  
+  html /deep/ .color-picker-dialog #title {
+    text-align:center;
+    font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
+    color:white;
+    padding:8px;
+    font-size:13px;
+  }
+  
+  html /deep/ .color-picker-dialog #detail {
+    padding:20px;
+    flex:1;
+  }
+  
+  html /deep/ .color-picker-dialog paper-slider {
+    width:100%;
+  }
+  html /deep/ .color-picker-dialog paper-input {
+    width:100%;
+    padding:0px 24px;
+    box-sizing:border-box;
+    margin:-10px 0px 0px 0px;
+  }
+  html /deep/ .color-picker-dialog #huePicker{
+    width:calc(100% - 30px);
+    margin:15px;
+    height:15px;
+    border-radius:2px;
+  }
+  html /deep/ .color-picker-dialog .landscapeOnly, html /deep/ .color-picker-dialog .portraitOnly{
+    display:none;
+  }
+  
+  @media only screen and (orientation : portrait) {
+    html /deep/ .color-picker-dialog .portraitOnly{
+      display:block;
+    }
+  }
+  @media only screen and (orientation : landscape) {
+    html /deep/ .color-picker-dialog #detail {
+      padding-top:35px;
+    }
+    html /deep/ .color-picker-dialog {
+      width:480px;
+    }
+    html /deep/ .color-picker-dialog #container {
+      display:flex;
+      flex-direction: row;
+    }
+    html /deep/ .color-picker-dialog .landscapeOnly{
+      display:block;
+    }
+  }
+  
+</style>
+<polymer-element name="paper-color-picker">
+
+<template>
+
+  <style>
+    :host {
+    }
+  </style>
+
+  <paper-action-dialog id="dialog" class="color-picker-dialog" backdrop>
+    <div id="container" layout vertical>
+      <div id="header">
+        <div id="title">Color Picker</div>
+        <div id="preview">
+          <paper-color-circle id="picker" colouredAAborder="{{[50,50,50]}}" shape="{{shape}}" type="{{type}}" value="{{colorValue}}" color="{{immediateColor}}" hue="{{colorHue}}" lightness="{{colorLightness}}"></paper-color-circle>
+        </div>
+      </div>
+      <div id="detail">
+        
+        <template if="{{type == 'hsv' && shape !== 'huebox'}}">
+          <label>Value (Brightness):</label><br/>
+          <paper-slider id="valueSlider" min="0" max="100" pin="true" value="100" immediateValue="{{sliderValue}}"></paper-slider>
+        </template>
+        <template if="{{type == 'hsl' && shape !== 'huebox'}}">
+          <label>Lightness:</label><br/>
+          <paper-slider id="lightnessSlider" min="0" max="100" pin="true" value="50" immediateValue="{{sliderLightness}}"></paper-slider>
+        </template>
+        <template if="{{shape == 'huebox'}}">
+          <label>Hue:</label><br/>
+          <canvas id="huePicker" on-tap="{{huePickerPickColor}}" width="360" height="1"></canvas>
+          <!--<paper-slider id="hueSlider" min="0" max="100" value="50" immediateValue="{{sliderHue}}"></paper-slider>-->
+        </template>
+        
+        <div class="landscapeOnly">
+          <label>Red:</label><br/>
+          <paper-input value="{{immediateColor[0]}}" type="number" min="0" max="255"></paper-input>
+        </div>
+        <div class="landscapeOnly">
+          <label>Green:</label><br/>
+          <paper-input value="{{immediateColor[1]}}" type="number" min="0" max="255"></paper-input>
+        </div>
+        <div class="landscapeOnly">
+          <label>Blue:</label><br/>
+          <paper-input value="{{immediateColor[2]}}" type="number" min="0" max="255"></paper-input>
+        </div>
+        
+      </div>
+    </div>
+    <paper-button affirmative>Cancel</paper-button>
+    <paper-button affirmative on-tap="{{setColor}}">OK</paper-button>
+
+  </paper-action-dialog>
+</template>
+
+<script>
+
+  Polymer('paper-color-picker', {
+
+    publish: {
+      /**
+         * *hsv* or *hsl*
+         *
+         * @attribute type
+         * @type string
+         * @default 'hsv'
+         */
+      type:"hsv",
+      /**
+         * *square*, *circle* or *huebox*
+         *
+         * @attribute shape
+         * @type string
+         * @default 'circle'
+         */
+      shape:"circle",
+      /**
+         * The selected color as an array: `[red, green, blue]`
+         * even before the user clicks ok
+         *
+         * @attribute immediateColor
+         * @type Array
+         * @default new Array(3)
+         */
+      immediateColor:[50,50,50],
+      /**
+         * The selected color as an array: `[red, green, blue]`
+         *
+         * @attribute color
+         * @type Array
+         * @default new Array(3)
+         */
+      color:[undefined, undefined, undefined]
+    },
+    
+    colorValue:1,
+    colorLightness:.5,
+    colorHue:0,
+    disableUpdate:false,
+    sliderValue:100,
+    sliderLightness:50,
+    sliderHue:50,
+    
+    setColorWheel: function(){
+      if(!this.disableUpdate){
+        if(this.$.valueSlider) this.colorValue = this.$.valueSlider.immediateValue/100;
+        if(this.$.lightnessSlider) this.colorLightness = this.$.lightnessSlider.immediateValue/100;
+        that = this;
+        setTimeout(function(){
+          that.disableUpdate = false;
+        }, 50);
+      }
+      this.disableUpdate = true;
+    },
+    
+    sliderValueChanged: function(){
+      this.setColorWheel();
+    },
+    
+    sliderLightnessChanged: function(){
+      this.setColorWheel();
+    },
+    
+    immediateColorChanged: function(){
+      this.$.preview.style.backgroundColor = "rgb("+this.immediateColor[0]+","+this.immediateColor[1]+","+this.immediateColor[2]+")";
+      var maxZ = Math.max.bind(Math, 0);
+      this.$.title.style.backgroundColor = "rgb("+maxZ(this.immediateColor[0]-40)+","+maxZ(this.immediateColor[1]-40)+","+maxZ(this.immediateColor[2]-40)+")";
+    },
+    
+    drawHuePicker: function(){
+      this._huePickerCtx = this.$.huePicker.getContext("2d");
+      var bitmap = this._huePickerCtx.getImageData(0, 0, 360, 30);
+      for (var x = 0; x < 360; x++) {
+        var hue = x;
+        var color = this.$.picker.hsv2rgb(hue,1,1);
+        bitmap.data[4 * x + 0] = color[0];
+        bitmap.data[4 * x + 1] = color[1];
+        bitmap.data[4 * x + 2] = color[2];
+        bitmap.data[4 * x + 3] = 255;
+      }
+      this._huePickerCtx.putImageData(bitmap, 0, 0);
+    },
+    
+    huePickerPickColor: function(e){
+      var rect = this.$.huePicker.getBoundingClientRect();
+      var percentage = (e.x - rect.left)/rect.width;
+      this.colorHue = percentage;
+    },
+    
+    setColor: function(){
+      this.color = this.immediateColor;
+    },
+    
+    open: function(){
+      if(this.color && this.color[1]) this.immediateColor = this.color;
+      this.immediateColorChanged();
+      this.$.dialog.open();
+      if(this.$.huePicker) this.drawHuePicker();
+    }
+
+  });
+
+</script>
+
+</polymer-element>
