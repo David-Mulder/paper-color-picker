@@ -1,0 +1,10 @@
+{
+  "name": "paper-color-picker",
+  "dependencies": {
+    "polymer": "Polymer/polymer#master",
+    "paper-dialog": "Polymer/paper-dialog#master",
+    "paper-button": "Polymer/paper-button#master",
+    "paper-slider": "Polymer/paper-slider#master",
+    "paper-input": "Polymer/paper-input#master"
+  }
+}
