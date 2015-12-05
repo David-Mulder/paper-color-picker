@@ -23,7 +23,7 @@
     }
   </style>
   <template>
-  <paper-ripple id="ripple" class$="{{shape}}"></paper-ripple>
+  <paper-ripple id="ripple" class$="{{shape}}" recenters></paper-ripple>
   <canvas id="canvas" on-down="onDown" on-up="onUp" on-track="onMove"></canvas>
 </template>
   <script>
@@ -301,14 +301,6 @@
             this._moveStart = false;
           }
           this.set('$.ripple.style.color', 'rgb(' + this.color[0] + ',' + this.color[1] + ',' + this.color[2] + ')');
-          this.$.ripple.downAction({
-            x: e.x,
-            y: e.y
-          });
-          var that = this;
-          setTimeout(function () {
-            that.$.ripple.upAction();
-          }, 100);
         },
         redraw: function () {
           var size = this.getBoundingClientRect();
