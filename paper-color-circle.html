@@ -432,7 +432,7 @@
           if (this._domReady)
             this.redraw();
         },
-        ready: function () {
+        attached: function () {
           this._domReady = true;
           this._ctx = this.$.canvas.getContext('2d');
           this.redraw();
