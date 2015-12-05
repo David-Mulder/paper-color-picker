@@ -154,15 +154,15 @@ There are three different main configurations the dialog allows, `circle`, `squa
         
         <div class="landscapeOnly">
           <label>Red:</label><br>
-          <paper-input value="{{immediateColor.0}}" type="number" min="0" max="255"></paper-input>
+          <paper-input id="redField" value="{{immediateColor.0}}" on-input="changeColorMixture" type="number" min="0" max="255"></paper-input>
         </div>
         <div class="landscapeOnly">
           <label>Green:</label><br>
-          <paper-input value="{{immediateColor.1}}" type="number" min="0" max="255"></paper-input>
+          <paper-input id="greenField" value="{{immediateColor.1}}" on-input="changeColorMixture" type="number" min="0" max="255"></paper-input>
         </div>
         <div class="landscapeOnly">
           <label>Blue:</label><br>
-          <paper-input value="{{immediateColor.2}}" type="number" min="0" max="255"></paper-input>
+          <paper-input id="blueField" value="{{immediateColor.2}}" on-input="changeColorMixture" type="number" min="0" max="255"></paper-input>
         </div>
         
       </div>
@@ -314,6 +314,13 @@ There are three different main configurations the dialog allows, `circle`, `squa
         var rect = this.$.huePicker.getBoundingClientRect();
         var percentage = (e.x - rect.left) / rect.width;
         this.colorHue = percentage;
+      },
+      changeColorMixture: function() {
+        var red = this.$.redField.value;
+        var green = this.$.greenField.value;
+        var blue = this.$.blueField.value;
+        var colors = [red, green, blue];
+        this.set('immediateColor', colors);
       },
       setColor: function () {
         this.color = this.immediateColor;
