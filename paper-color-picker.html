@@ -34,6 +34,8 @@ There are three different main configurations the dialog allows, `circle`, `squa
 <link href="bower_components/paper-dialog/paper-dialog.html" rel="import">
 <link href="bower_components/paper-button/paper-button.html" rel="import">
 <link href="bower_components/paper-input/paper-input.html" rel="import">
+<link rel="import" href="bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="bower_components/neon-animation/animations/scale-up-animation.html">
 <link href="paper-color-circle.html" rel="import">
 
 <style>
@@ -123,7 +125,10 @@ There are three different main configurations the dialog allows, `circle`, `squa
   </style>
   <template>
 
-  <paper-dialog id="dialog" class="color-picker-dialog">
+  <paper-dialog id="dialog" 
+                entry-animation="scale-up-animation"
+                exit-animation="fade-out-animation"
+                class="color-picker-dialog">
     <div id="container" class="layout vertical">
       <div id="header">
         <div id="title">Color Picker</div>
