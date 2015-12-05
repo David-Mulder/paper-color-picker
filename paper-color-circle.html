@@ -260,8 +260,8 @@
         },
         pickColor: function (e, redraw) {
           var rect = this.getBoundingClientRect();
-          var touchX = e.clientX - rect.left;
-          var touchY = e.clientY - rect.top;
+          var touchX = e.detail.x - rect.left;
+          var touchY = e.detail.y - rect.top;
           var color = this._ctx.getImageData(touchX, touchY, 1, 1).data;
           if (color[3] > 0) {
             this.color = [
