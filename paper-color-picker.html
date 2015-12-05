@@ -1,8 +1,6 @@
 <!--
 Copyright (c) 2014 David Mulder
--->
-
-<!--
+--><!--
 
 Material Design: Color picker inspired by <a href="http://www.google.com/design/spec/components/pickers.html">Material Design Pickers</a>
 
@@ -27,8 +25,7 @@ There are three different main configurations the dialog allows, `circle`, `squa
 @group Paper Elements
 @element paper-color-picker
 @homepage github.io
--->
-<link href="../polymer/polymer.html" rel="import">
+--><html><head><link href="../polymer/polymer.html" rel="import">
 <link href="../paper-slider/paper-slider.html" rel="import">
 <link href="../paper-dialog/paper-action-dialog.html" rel="import">
 <link href="../paper-button/paper-button.html" rel="import">
@@ -113,82 +110,108 @@ There are three different main configurations the dialog allows, `circle`, `squa
   }
   
 </style>
-<polymer-element name="paper-color-picker">
-
-<template>
-
+  <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<dom-module id="paper-color-picker">
+  <style>
+    /* TODO(polyup): For speed, consider reworking these styles with .classes
+                     and #ids rather than [attributes].
+    */
+    [layout] {
+      @apply(--layout);
+    }
+    [layout][vertical] {
+      @apply(--layout-vertical);
+    }
+  </style>
   <style>
     :host {
     }
   </style>
+  <template>
 
-  <paper-action-dialog id="dialog" class="color-picker-dialog" backdrop>
-    <div id="container" layout vertical>
+  <paper-action-dialog id="dialog" class="color-picker-dialog" backdrop="">
+    <div id="container" layout="" vertical="">
       <div id="header">
         <div id="title">Color Picker</div>
         <div id="preview">
-          <paper-color-circle id="picker" colouredAAborder="{{[50,50,50]}}" shape="{{shape}}" type="{{type}}" value="{{colorValue}}" color="{{immediateColor}}" hue="{{colorHue}}" lightness="{{colorLightness}}"></paper-color-circle>
+          <paper-color-circle id="picker" colouredaaborder="{{_computeColouredaaborder()}}" shape="{{shape}}" type="{{type}}" value="{{colorValue}}" color="{{immediateColor}}" hue="{{colorHue}}" lightness="{{colorLightness}}"></paper-color-circle>
         </div>
       </div>
       <div id="detail">
         
-        <template if="{{type == 'hsv' && shape !== 'huebox'}}">
-          <label>Value (Brightness):</label><br/>
-          <paper-slider id="valueSlider" min="0" max="100" pin="true" value="100" immediateValue="{{sliderValue}}"></paper-slider>
+        <template is="dom-if" if="{{_computeIf(shape, type)}}">
+          <label>Value (Brightness):</label><br>
+          <paper-slider id="valueSlider" min="0" max="100" pin="true" value="100" immediatevalue="{{sliderValue}}"></paper-slider>
         </template>
-        <template if="{{type == 'hsl' && shape !== 'huebox'}}">
-          <label>Lightness:</label><br/>
-          <paper-slider id="lightnessSlider" min="0" max="100" pin="true" value="50" immediateValue="{{sliderLightness}}"></paper-slider>
+        <template is="dom-if" if="{{_computeIf2(shape, type)}}">
+          <label>Lightness:</label><br>
+          <paper-slider id="lightnessSlider" min="0" max="100" pin="true" value="50" immediatevalue="{{sliderLightness}}"></paper-slider>
         </template>
-        <template if="{{shape == 'huebox'}}">
-          <label>Hue:</label><br/>
-          <canvas id="huePicker" on-tap="{{huePickerPickColor}}" width="360" height="1"></canvas>
+        <template is="dom-if" if="{{_computeIf3(shape)}}">
+          <label>Hue:</label><br>
+          <canvas id="huePicker" on-tap="huePickerPickColor" width="360" height="1"></canvas>
           <!--<paper-slider id="hueSlider" min="0" max="100" value="50" immediateValue="{{sliderHue}}"></paper-slider>-->
         </template>
         
         <div class="landscapeOnly">
-          <label>Red:</label><br/>
+          <label>Red:</label><br>
           <paper-input value="{{immediateColor[0]}}" type="number" min="0" max="255"></paper-input>
         </div>
         <div class="landscapeOnly">
-          <label>Green:</label><br/>
+          <label>Green:</label><br>
           <paper-input value="{{immediateColor[1]}}" type="number" min="0" max="255"></paper-input>
         </div>
         <div class="landscapeOnly">
-          <label>Blue:</label><br/>
+          <label>Blue:</label><br>
           <paper-input value="{{immediateColor[2]}}" type="number" min="0" max="255"></paper-input>
         </div>
         
       </div>
     </div>
-    <paper-button affirmative>Cancel</paper-button>
-    <paper-button affirmative on-tap="{{setColor}}">OK</paper-button>
+    <paper-button affirmative="">Cancel</paper-button>
+    <paper-button affirmative="" on-tap="setColor">OK</paper-button>
 
   </paper-action-dialog>
 </template>
-
-<script>
-
-  Polymer('paper-color-picker', {
-
-    publish: {
-      /**
-         * *hsv* or *hsl*
+  <script>
+    Polymer({
+      is: 'paper-color-picker',
+      properties: {
+        /**
+         * The selected color as an array: `[red, green, blue]`
          *
-         * @attribute type
-         * @type string
-         * @default 'hsv'
+         * @attribute color
+         * @type Array
+         * @default new Array(3)
          */
-      type:"hsv",
-      /**
-         * *square*, *circle* or *huebox*
-         *
-         * @attribute shape
-         * @type string
-         * @default 'circle'
-         */
-      shape:"circle",
-      /**
+        color: {
+          type: Array,
+          value: function () {
+            return [
+              undefined,
+              undefined,
+              undefined
+            ];
+          },
+          notify: true
+        },
+        colorHue: {
+          type: Number,
+          value: 0
+        },
+        colorLightness: {
+          type: Number,
+          value: 0.5
+        },
+        colorValue: {
+          type: Number,
+          value: 1
+        },
+        disableUpdate: {
+          type: Boolean,
+          value: false
+        },
+        /**
          * The selected color as an array: `[red, green, blue]`
          * even before the user clicks ok
          *
@@ -196,84 +219,126 @@ There are three different main configurations the dialog allows, `circle`, `squa
          * @type Array
          * @default new Array(3)
          */
-      immediateColor:[50,50,50],
-      /**
-         * The selected color as an array: `[red, green, blue]`
+        immediateColor: {
+          type: Array,
+          value: function () {
+            return [
+              50,
+              50,
+              50
+            ];
+          },
+          notify: true,
+          observer: 'immediateColorChanged'
+        },
+        /**
+         * *square*, *circle* or *huebox*
          *
-         * @attribute color
-         * @type Array
-         * @default new Array(3)
+         * @attribute shape
+         * @type string
+         * @default 'circle'
          */
-      color:[undefined, undefined, undefined]
-    },
-    
-    colorValue:1,
-    colorLightness:.5,
-    colorHue:0,
-    disableUpdate:false,
-    sliderValue:100,
-    sliderLightness:50,
-    sliderHue:50,
-    
-    setColorWheel: function(){
-      if(!this.disableUpdate){
-        if(this.$.valueSlider) this.colorValue = this.$.valueSlider.immediateValue/100;
-        if(this.$.lightnessSlider) this.colorLightness = this.$.lightnessSlider.immediateValue/100;
-        that = this;
-        setTimeout(function(){
-          that.disableUpdate = false;
-        }, 50);
+        shape: {
+          type: String,
+          value: 'circle',
+          notify: true
+        },
+        sliderHue: {
+          type: Number,
+          value: 50
+        },
+        sliderLightness: {
+          type: Number,
+          value: 50,
+          observer: 'sliderLightnessChanged'
+        },
+        sliderValue: {
+          type: Number,
+          value: 100,
+          observer: 'sliderValueChanged'
+        },
+        /**
+         * *hsv* or *hsl*
+         *
+         * @attribute type
+         * @type string
+         * @default 'hsv'
+         */
+        type: {
+          type: String,
+          value: 'hsv',
+          notify: true
+        }
+      },
+      setColorWheel: function () {
+        if (!this.disableUpdate) {
+          if (this.$.valueSlider)
+            this.colorValue = this.$.valueSlider.immediateValue / 100;
+          if (this.$.lightnessSlider)
+            this.colorLightness = this.$.lightnessSlider.immediateValue / 100;
+          that = this;
+          setTimeout(function () {
+            that.disableUpdate = false;
+          }, 50);
+        }
+        this.disableUpdate = true;
+      },
+      sliderValueChanged: function () {
+        this.setColorWheel();
+      },
+      sliderLightnessChanged: function () {
+        this.setColorWheel();
+      },
+      immediateColorChanged: function () {
+        this.set('$.preview.style.backgroundColor', 'rgb(' + this.immediateColor[0] + ',' + this.immediateColor[1] + ',' + this.immediateColor[2] + ')');
+        var maxZ = Math.max.bind(Math, 0);
+        this.set('$.title.style.backgroundColor', 'rgb(' + maxZ(this.immediateColor[0] - 40) + ',' + maxZ(this.immediateColor[1] - 40) + ',' + maxZ(this.immediateColor[2] - 40) + ')');
+      },
+      drawHuePicker: function () {
+        this._huePickerCtx = this.$.huePicker.getContext('2d');
+        var bitmap = this._huePickerCtx.getImageData(0, 0, 360, 30);
+        for (var x = 0; x < 360; x++) {
+          var hue = x;
+          var color = this.$.picker.hsv2rgb(hue, 1, 1);
+          bitmap.data[4 * x + 0] = color[0];
+          bitmap.data[4 * x + 1] = color[1];
+          bitmap.data[4 * x + 2] = color[2];
+          bitmap.data[4 * x + 3] = 255;
+        }
+        this._huePickerCtx.putImageData(bitmap, 0, 0);
+      },
+      huePickerPickColor: function (e) {
+        var rect = this.$.huePicker.getBoundingClientRect();
+        var percentage = (e.x - rect.left) / rect.width;
+        this.colorHue = percentage;
+      },
+      setColor: function () {
+        this.color = this.immediateColor;
+      },
+      open: function () {
+        if (this.color && this.color[1])
+          this.immediateColor = this.color;
+        this.immediateColorChanged();
+        this.$.dialog.open();
+        if (this.$.huePicker)
+          this.drawHuePicker();
+      },
+      _computeColouredaaborder: function () {
+        return [
+          50,
+          50,
+          50
+        ];
+      },
+      _computeIf: function (shape, type) {
+        return type == 'hsv' && shape !== 'huebox';
+      },
+      _computeIf2: function (shape, type) {
+        return type == 'hsl' && shape !== 'huebox';
+      },
+      _computeIf3: function (shape) {
+        return shape == 'huebox';
       }
-      this.disableUpdate = true;
-    },
-    
-    sliderValueChanged: function(){
-      this.setColorWheel();
-    },
-    
-    sliderLightnessChanged: function(){
-      this.setColorWheel();
-    },
-    
-    immediateColorChanged: function(){
-      this.$.preview.style.backgroundColor = "rgb("+this.immediateColor[0]+","+this.immediateColor[1]+","+this.immediateColor[2]+")";
-      var maxZ = Math.max.bind(Math, 0);
-      this.$.title.style.backgroundColor = "rgb("+maxZ(this.immediateColor[0]-40)+","+maxZ(this.immediateColor[1]-40)+","+maxZ(this.immediateColor[2]-40)+")";
-    },
-    
-    drawHuePicker: function(){
-      this._huePickerCtx = this.$.huePicker.getContext("2d");
-      var bitmap = this._huePickerCtx.getImageData(0, 0, 360, 30);
-      for (var x = 0; x < 360; x++) {
-        var hue = x;
-        var color = this.$.picker.hsv2rgb(hue,1,1);
-        bitmap.data[4 * x + 0] = color[0];
-        bitmap.data[4 * x + 1] = color[1];
-        bitmap.data[4 * x + 2] = color[2];
-        bitmap.data[4 * x + 3] = 255;
-      }
-      this._huePickerCtx.putImageData(bitmap, 0, 0);
-    },
-    
-    huePickerPickColor: function(e){
-      var rect = this.$.huePicker.getBoundingClientRect();
-      var percentage = (e.x - rect.left)/rect.width;
-      this.colorHue = percentage;
-    },
-    
-    setColor: function(){
-      this.color = this.immediateColor;
-    },
-    
-    open: function(){
-      if(this.color && this.color[1]) this.immediateColor = this.color;
-      this.immediateColorChanged();
-      this.$.dialog.open();
-      if(this.$.huePicker) this.drawHuePicker();
-    }
-
-  });
-
-</script>
-
-</polymer-element>
+    });
+  </script>
+</dom-module>
