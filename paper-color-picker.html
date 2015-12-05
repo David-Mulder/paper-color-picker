@@ -25,7 +25,10 @@ There are three different main configurations the dialog allows, `circle`, `squa
 @group Paper Elements
 @element paper-color-picker
 @homepage github.io
---><html><head><link href="bower_components/polymer/polymer.html" rel="import">
+-->
+<html>
+<head>
+<link href="bower_components/polymer/polymer.html" rel="import">
 <link href="bower_components/paper-slider/paper-slider.html" rel="import">
 <link href="bower_components/paper-dialog/paper-action-dialog.html" rel="import">
 <link href="bower_components/paper-button/paper-button.html" rel="import">
@@ -129,8 +132,8 @@ There are three different main configurations the dialog allows, `circle`, `squa
   </style>
   <template>
 
-  <paper-action-dialog id="dialog" class="color-picker-dialog" backdrop="">
-    <div id="container" layout="" vertical="">
+  <paper-dialog id="dialog" class="color-picker-dialog">
+    <div id="container" class="layout vertical">
       <div id="header">
         <div id="title">Color Picker</div>
         <div id="preview">
@@ -168,10 +171,12 @@ There are three different main configurations the dialog allows, `circle`, `squa
         
       </div>
     </div>
-    <paper-button affirmative="">Cancel</paper-button>
-    <paper-button affirmative="" on-tap="setColor">OK</paper-button>
+    <div class="buttons">
+      <paper-button dialog-dismiss>Cancel</paper-button>
+      <paper-button dialog-confirm on-tap="setColor">OK</paper-button>
+    </div>
 
-  </paper-action-dialog>
+  </paper-dialog>
 </template>
   <script>
     Polymer({
