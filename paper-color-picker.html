@@ -140,16 +140,16 @@ There are three different main configurations the dialog allows, `circle`, `squa
         
         <template is="dom-if" if="{{_computeIf(shape, type)}}">
           <label>Value (Brightness):</label><br>
-          <paper-slider id="valueSlider" min="0" max="100" pin="true" value="100" immediatevalue="{{sliderValue}}"></paper-slider>
+          <paper-slider id="valueSlider" min="0" max="100" pin="true" value="100" immediate-value="{{sliderValue}}"></paper-slider>
         </template>
         <template is="dom-if" if="{{_computeIf2(shape, type)}}">
           <label>Lightness:</label><br>
-          <paper-slider id="lightnessSlider" min="0" max="100" pin="true" value="50" immediatevalue="{{sliderLightness}}"></paper-slider>
+          <paper-slider id="lightnessSlider" min="0" max="100" pin="true" value="50" immediate-value="{{sliderLightness}}"></paper-slider>
         </template>
         <template is="dom-if" if="{{_computeIf3(shape)}}">
           <label>Hue:</label><br>
           <canvas id="huePicker" on-tap="huePickerPickColor" width="360" height="1"></canvas>
-          <!--<paper-slider id="hueSlider" min="0" max="100" value="50" immediateValue="{{sliderHue}}"></paper-slider>-->
+          <!--<paper-slider id="hueSlider" min="0" max="100" value="50" immediate-value="{{sliderHue}}"></paper-slider>-->
         </template>
         
         <div class="landscapeOnly">
@@ -272,11 +272,13 @@ There are three different main configurations the dialog allows, `circle`, `squa
         }
       },
       setColorWheel: function () {
+        var valueSlider = document.querySelector('#valueSlider');
+        var lightnessSlider = document.querySelector('#lightnessSlider');
         if (!this.disableUpdate) {
-          if (this.$.valueSlider)
-            this.colorValue = this.$.valueSlider.immediateValue / 100;
-          if (this.$.lightnessSlider)
-            this.colorLightness = this.$.lightnessSlider.immediateValue / 100;
+          if (valueSlider)
+            this.colorValue = valueSlider.immediateValue / 100;
+          if (lightnessSlider)
+            this.colorLightness = lightnessSlider.immediateValue / 100;
           that = this;
           setTimeout(function () {
             that.disableUpdate = false;
