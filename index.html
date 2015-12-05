@@ -13,10 +13,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <link rel="import" href="bower_components/polymer/polymer.html">
   <link rel="import" href="bower_components/iron-component-page/iron-component-page.html">
+  <link rel="import" href="paper-color-picker.html">
 
 </head>
 <body>
 
-  <iron-component-page></iron-component-page>
+  <paper-color-picker></paper-color-picker>
 
-</body></html>
+  <script type="text/javascript">
+  	document.querySelector('paper-color-picker').open();
+  </script>
+
+</body>
+</html>
