@@ -47,84 +47,78 @@ There are three different main configurations the dialog allows, `circle`, `squa
     
     padding:0px;
   }
-  
-  html /deep/ .color-picker-dialog paper-color-circle {
-    width:200px;
-    height:200px;
-  }
-  
-  html /deep/ .color-picker-dialog #container {
-    /*position:absolute;
-    left:0px;
-    top:0px;
-    right:0px;
-    bottom:0px;*/
-  }
-  
-  html /deep/ .color-picker-dialog #preview {
-    padding:20px;
-    text-align:center;
-  }
-  
-  html /deep/ .color-picker-dialog #title {
-    text-align:center;
-    font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
-    color:white;
-    padding:8px;
-    font-size:13px;
-  }
-  
-  html /deep/ .color-picker-dialog #detail {
-    padding:20px;
-    flex:1;
-  }
-  
-  html /deep/ .color-picker-dialog paper-slider {
-    width:100%;
-  }
-  html /deep/ .color-picker-dialog paper-input {
-    width:100%;
-    padding:0px 24px;
-    box-sizing:border-box;
-    margin:-10px 0px 0px 0px;
-  }
-  html /deep/ .color-picker-dialog #huePicker{
-    width:calc(100% - 30px);
-    margin:15px;
-    height:15px;
-    border-radius:2px;
-  }
-  html /deep/ .color-picker-dialog .landscapeOnly, html /deep/ .color-picker-dialog .portraitOnly{
-    display:none;
-  }
-  
-  @media only screen and (orientation : portrait) {
-    html /deep/ .color-picker-dialog .portraitOnly{
-      display:block;
-    }
-  }
-  @media only screen and (orientation : landscape) {
-    html /deep/ .color-picker-dialog #detail {
-      padding-top:35px;
-    }
-    html /deep/ .color-picker-dialog {
-      width:480px;
-    }
-    html /deep/ .color-picker-dialog #container {
-      display:flex;
-      flex-direction: row;
-    }
-    html /deep/ .color-picker-dialog .landscapeOnly{
-      display:block;
-    }
-  }
-  
 </style>
 <dom-module id="paper-color-picker">
   <style>
-  </style>
-  <style>
-    :host {
+    paper-color-circle {
+      width:200px;
+      height:200px;
+    }
+    
+    #container {
+      /*position:absolute;
+      left:0px;
+      top:0px;
+      right:0px;
+      bottom:0px;*/
+    }
+    
+    #preview {
+      padding:20px;
+      text-align:center;
+    }
+    
+    #title {
+      text-align:center;
+      font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
+      color:white;
+      padding:8px;
+      font-size:13px;
+    }
+    
+    #detail {
+      padding:20px;
+      flex:1;
+    }
+    
+    paper-slider {
+      width:100%;
+    }
+    paper-input {
+      width:100%;
+      padding:0px 24px;
+      box-sizing:border-box;
+      margin:-10px 0px 0px 0px;
+    }
+    #huePicker{
+      width:calc(100% - 30px);
+      margin:15px;
+      height:15px;
+      border-radius:2px;
+    }
+    .landscapeOnly, .portraitOnly{
+      display:none;
+    }
+    
+    @media only screen and (orientation : portrait) {
+      .portraitOnly{
+        display:block;
+      }
+    }
+    @media only screen and (orientation : landscape) {
+      #detail {
+        padding-top:35px;
+      }
+      :host {
+        width:480px;
+      }
+      #container {
+        display:flex;
+        flex-direction: row;
+      }
+      .landscapeOnly{
+        display:block;
+      }
     }
   </style>
   <template>
