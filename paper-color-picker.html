@@ -1,8 +1,6 @@
 <!--
 Copyright (c) 2014 David Mulder
--->
-
-<!--
+--><!--
 
 Material Design: Color picker inspired by <a href="http://www.google.com/design/spec/components/pickers.html">Material Design Pickers</a>
 
@@ -16,6 +14,10 @@ and to open the dialog
 
     this.$.picker.open();
 
+Demo
+---
+For a complete demo click here: <a href="demo/demo.html">Demo</a>
+
 Shape and colours
 ---
 There are three different main configurations the dialog allows, `circle`, `square`
@@ -28,11 +30,16 @@ There are three different main configurations the dialog allows, `circle`, `squa
 @element paper-color-picker
 @homepage github.io
 -->
+<html>
+<head>
 <link href="../polymer/polymer.html" rel="import">
+<link href="../iron-flex-layout/iron-flex-layout.html" rel="import">
 <link href="../paper-slider/paper-slider.html" rel="import">
-<link href="../paper-dialog/paper-action-dialog.html" rel="import">
+<link href="../paper-dialog/paper-dialog.html" rel="import">
 <link href="../paper-button/paper-button.html" rel="import">
 <link href="../paper-input/paper-input.html" rel="import">
+<link href="../neon-animation/animations/fade-out-animation.html" rel="import">
+<link href="../neon-animation/animations/scale-up-animation.html" rel="import">
 <link href="paper-color-circle.html" rel="import">
 
 <style>
@@ -40,240 +47,306 @@ There are three different main configurations the dialog allows, `circle`, `squa
     
     padding:0px;
   }
-  
-  html /deep/ .color-picker-dialog paper-color-circle {
-    width:200px;
-    height:200px;
-  }
-  
-  html /deep/ .color-picker-dialog #container {
-    /*position:absolute;
-    left:0px;
-    top:0px;
-    right:0px;
-    bottom:0px;*/
-  }
-  
-  html /deep/ .color-picker-dialog #preview {
-    padding:20px;
-    text-align:center;
-  }
-  
-  html /deep/ .color-picker-dialog #title {
-    text-align:center;
-    font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
-    color:white;
-    padding:8px;
-    font-size:13px;
-  }
-  
-  html /deep/ .color-picker-dialog #detail {
-    padding:20px;
-    flex:1;
-  }
-  
-  html /deep/ .color-picker-dialog paper-slider {
-    width:100%;
-  }
-  html /deep/ .color-picker-dialog paper-input {
-    width:100%;
-    padding:0px 24px;
-    box-sizing:border-box;
-    margin:-10px 0px 0px 0px;
-  }
-  html /deep/ .color-picker-dialog #huePicker{
-    width:calc(100% - 30px);
-    margin:15px;
-    height:15px;
-    border-radius:2px;
-  }
-  html /deep/ .color-picker-dialog .landscapeOnly, html /deep/ .color-picker-dialog .portraitOnly{
-    display:none;
-  }
-  
-  @media only screen and (orientation : portrait) {
-    html /deep/ .color-picker-dialog .portraitOnly{
-      display:block;
-    }
-  }
-  @media only screen and (orientation : landscape) {
-    html /deep/ .color-picker-dialog #detail {
-      padding-top:35px;
-    }
-    html /deep/ .color-picker-dialog {
-      width:480px;
-    }
-    html /deep/ .color-picker-dialog #container {
-      display:flex;
-      flex-direction: row;
-    }
-    html /deep/ .color-picker-dialog .landscapeOnly{
-      display:block;
-    }
-  }
-  
 </style>
-<polymer-element name="paper-color-picker">
-
-<template>
-
+<dom-module id="paper-color-picker">
   <style>
-    :host {
+    paper-color-circle {
+      width:200px;
+      height:200px;
+    }
+    
+    #container {
+      /*position:absolute;
+      left:0px;
+      top:0px;
+      right:0px;
+      bottom:0px;*/
+    }
+    
+    #preview {
+      padding:20px;
+      text-align:center;
+    }
+    
+    #title {
+      text-align:center;
+      font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
+      color:white;
+      padding:8px;
+      font-size:13px;
+    }
+    
+    #detail {
+      padding:20px;
+      flex:1;
+    }
+    
+    paper-slider {
+      width:100%;
+    }
+    paper-input {
+      width:100%;
+      padding:0px 24px;
+      box-sizing:border-box;
+      margin:-10px 0px 0px 0px;
+    }
+    #huePicker{
+      width:calc(100% - 30px);
+      margin:15px;
+      height:15px;
+      border-radius:2px;
+    }
+    .landscapeOnly, .portraitOnly{
+      display:none;
+    }
+    
+    @media only screen and (orientation : portrait) {
+      .portraitOnly{
+        display:block;
+      }
+    }
+    @media only screen and (orientation : landscape) {
+      #detail {
+        padding-top:35px;
+      }
+      :host {
+        width:480px;
+      }
+      #container {
+        display:flex;
+        flex-direction: row;
+      }
+      .landscapeOnly{
+        display:block;
+      }
     }
   </style>
+  <template>
 
-  <paper-action-dialog id="dialog" class="color-picker-dialog" backdrop>
-    <div id="container" layout vertical>
+  <paper-dialog id="dialog" 
+                entry-animation="scale-up-animation"
+                exit-animation="fade-out-animation"
+                class="color-picker-dialog">
+    <div id="container" class="layout vertical">
       <div id="header">
         <div id="title">Color Picker</div>
         <div id="preview">
-          <paper-color-circle id="picker" colouredAAborder="{{[50,50,50]}}" shape="{{shape}}" type="{{type}}" value="{{colorValue}}" color="{{immediateColor}}" hue="{{colorHue}}" lightness="{{colorLightness}}"></paper-color-circle>
+          <paper-color-circle id="picker" colouredaaborder="{{_computeColouredaaborder()}}" shape="{{shape}}" type="{{type}}" value="{{colorValue}}" color="{{immediateColor}}" hue="{{colorHue}}" lightness="{{colorLightness}}"></paper-color-circle>
         </div>
       </div>
       <div id="detail">
         
-        <template if="{{type == 'hsv' && shape !== 'huebox'}}">
-          <label>Value (Brightness):</label><br/>
-          <paper-slider id="valueSlider" min="0" max="100" pin="true" value="100" immediateValue="{{sliderValue}}"></paper-slider>
+        <template is="dom-if" if="{{_computeIf(shape, type)}}">
+          <label>Value (Brightness):</label><br>
+          <paper-slider id="valueSlider" min="0" max="100" pin="true" value="100" immediate-value="{{sliderValue}}"></paper-slider>
         </template>
-        <template if="{{type == 'hsl' && shape !== 'huebox'}}">
-          <label>Lightness:</label><br/>
-          <paper-slider id="lightnessSlider" min="0" max="100" pin="true" value="50" immediateValue="{{sliderLightness}}"></paper-slider>
+        <template is="dom-if" if="{{_computeIf2(shape, type)}}">
+          <label>Lightness:</label><br>
+          <paper-slider id="lightnessSlider" min="0" max="100" pin="true" value="50" immediate-value="{{sliderLightness}}"></paper-slider>
         </template>
-        <template if="{{shape == 'huebox'}}">
-          <label>Hue:</label><br/>
-          <canvas id="huePicker" on-tap="{{huePickerPickColor}}" width="360" height="1"></canvas>
-          <!--<paper-slider id="hueSlider" min="0" max="100" value="50" immediateValue="{{sliderHue}}"></paper-slider>-->
+        <template is="dom-if" if="{{_computeIf3(shape)}}">
+          <label>Hue:</label><br>
+          <canvas id="huePicker" on-tap="huePickerPickColor" width="360" height="1"></canvas>
+          <!--<paper-slider id="hueSlider" min="0" max="100" value="50" immediate-value="{{sliderHue}}"></paper-slider>-->
         </template>
         
         <div class="landscapeOnly">
-          <label>Red:</label><br/>
-          <paper-input value="{{immediateColor[0]}}" type="number" min="0" max="255"></paper-input>
+          <label>Red:</label><br>
+          <paper-input id="redField" value="{{immediateColor.red}}" on-input="changeColorMixture" type="number" min="0" max="255"></paper-input>
         </div>
         <div class="landscapeOnly">
-          <label>Green:</label><br/>
-          <paper-input value="{{immediateColor[1]}}" type="number" min="0" max="255"></paper-input>
+          <label>Green:</label><br>
+          <paper-input id="greenField" value="{{immediateColor.green}}" on-input="changeColorMixture" type="number" min="0" max="255"></paper-input>
         </div>
         <div class="landscapeOnly">
-          <label>Blue:</label><br/>
-          <paper-input value="{{immediateColor[2]}}" type="number" min="0" max="255"></paper-input>
+          <label>Blue:</label><br>
+          <paper-input id="blueField" value="{{immediateColor.blue}}" on-input="changeColorMixture" type="number" min="0" max="255"></paper-input>
         </div>
         
       </div>
     </div>
-    <paper-button affirmative>Cancel</paper-button>
-    <paper-button affirmative on-tap="{{setColor}}">OK</paper-button>
+    <div class="buttons">
+      <paper-button dialog-dismiss>Cancel</paper-button>
+      <paper-button dialog-confirm on-tap="setColor">OK</paper-button>
+    </div>
 
-  </paper-action-dialog>
+  </paper-dialog>
 </template>
-
-<script>
-
-  Polymer('paper-color-picker', {
-
-    publish: {
-      /**
-         * *hsv* or *hsl*
+  <script>
+    Polymer({
+      is: 'paper-color-picker',
+      properties: {
+        /**
+         * The selected color as an object: `{red, green, blue}`
          *
-         * @attribute type
-         * @type string
-         * @default 'hsv'
+         * @attribute color
+         * @type Object
+         * @default new Object()
          */
-      type:"hsv",
-      /**
+        color: {
+          type: Object,
+          value: {
+              red: undefined,
+              green: undefined,
+              blue: undefined
+          },
+          notify: true
+        },
+        colorHue: {
+          type: Number,
+          value: 0
+        },
+        colorLightness: {
+          type: Number,
+          value: 0.5
+        },
+        colorValue: {
+          type: Number,
+          value: 1
+        },
+        disableUpdate: {
+          type: Boolean,
+          value: false
+        },
+        /**
+         * The selected color as an object: `{red, green, blue}`
+         * even before the user clicks ok
+         *
+         * @attribute immediateColor
+         * @type Object
+         * @default {red: 50, green: 50, blue: 50}
+         */
+        immediateColor: {
+          type: Object,
+          value: {
+              red: 50,
+              green: 50,
+              blue: 50
+          },
+          notify: true,
+          observer: 'immediateColorChanged'
+        },
+        /**
          * *square*, *circle* or *huebox*
          *
          * @attribute shape
          * @type string
          * @default 'circle'
          */
-      shape:"circle",
-      /**
-         * The selected color as an array: `[red, green, blue]`
-         * even before the user clicks ok
+        shape: {
+          type: String,
+          value: 'circle',
+          notify: true
+        },
+        sliderHue: {
+          type: Number,
+          value: 50
+        },
+        sliderLightness: {
+          type: Number,
+          value: 50,
+          observer: 'sliderLightnessChanged'
+        },
+        sliderValue: {
+          type: Number,
+          value: 100,
+          observer: 'sliderValueChanged'
+        },
+        /**
+         * *hsv* or *hsl*
          *
-         * @attribute immediateColor
-         * @type Array
-         * @default new Array(3)
+         * @attribute type
+         * @type string
+         * @default 'hsv'
          */
-      immediateColor:[50,50,50],
-      /**
-         * The selected color as an array: `[red, green, blue]`
-         *
-         * @attribute color
-         * @type Array
-         * @default new Array(3)
-         */
-      color:[undefined, undefined, undefined]
-    },
-    
-    colorValue:1,
-    colorLightness:.5,
-    colorHue:0,
-    disableUpdate:false,
-    sliderValue:100,
-    sliderLightness:50,
-    sliderHue:50,
-    
-    setColorWheel: function(){
-      if(!this.disableUpdate){
-        if(this.$.valueSlider) this.colorValue = this.$.valueSlider.immediateValue/100;
-        if(this.$.lightnessSlider) this.colorLightness = this.$.lightnessSlider.immediateValue/100;
-        that = this;
-        setTimeout(function(){
-          that.disableUpdate = false;
-        }, 50);
+        type: {
+          type: String,
+          value: 'hsv',
+          notify: true
+        }
+      },
+      setColorWheel: function () {
+        var valueSlider = document.querySelector('#valueSlider');
+        var lightnessSlider = document.querySelector('#lightnessSlider');
+        if (!this.disableUpdate) {
+          if (valueSlider)
+            this.colorValue = valueSlider.immediateValue / 100;
+          if (lightnessSlider)
+            this.colorLightness = lightnessSlider.immediateValue / 100;
+          that = this;
+          setTimeout(function () {
+            that.disableUpdate = false;
+          }, 50);
+        }
+        this.disableUpdate = true;
+      },
+      sliderValueChanged: function () {
+        this.setColorWheel();
+      },
+      sliderLightnessChanged: function () {
+        this.setColorWheel();
+      },
+      immediateColorChanged: function () {
+        this.set('$.preview.style.backgroundColor', 'rgb(' + this.immediateColor['red'] + ',' + this.immediateColor['green'] + ',' + this.immediateColor['blue'] + ')');
+        var maxZ = Math.max.bind(Math, 0);
+        this.set('$.title.style.backgroundColor', 'rgb(' + maxZ(this.immediateColor['red'] - 40) + ',' + maxZ(this.immediateColor['green'] - 40) + ',' + maxZ(this.immediateColor['blue'] - 40) + ')');
+      },
+      drawHuePicker: function () {
+        this._huePickerCtx = this.$.huePicker.getContext('2d');
+        var bitmap = this._huePickerCtx.getImageData(0, 0, 360, 30);
+        for (var x = 0; x < 360; x++) {
+          var hue = x;
+          var color = this.$.picker.hsv2rgb(hue, 1, 1);
+          bitmap.data[4 * x + 0] = color[0];
+          bitmap.data[4 * x + 1] = color[1];
+          bitmap.data[4 * x + 2] = color[2];
+          bitmap.data[4 * x + 3] = 255;
+        }
+        this._huePickerCtx.putImageData(bitmap, 0, 0);
+      },
+      huePickerPickColor: function (e) {
+        var rect = this.$.huePicker.getBoundingClientRect();
+        var percentage = (e.x - rect.left) / rect.width;
+        this.colorHue = percentage;
+      },
+      changeColorMixture: function() {
+        var red = this.$.redField.value;
+        var green = this.$.greenField.value;
+        var blue = this.$.blueField.value;
+        var colors = {
+          red: red,
+          green: green,
+          blue: blue
+        };
+        this.set('immediateColor', colors);
+      },
+      setColor: function () {
+        this.color = this.immediateColor;
+      },
+      open: function () {
+        if (this.color && this.color['green'])
+          this.immediateColor = this.color;
+        this.immediateColorChanged();
+        this.$.dialog.open();
+        if (this.$.huePicker)
+          this.drawHuePicker();
+      },
+      _computeColouredaaborder: function () {
+        return [
+          50,
+          50,
+          50
+        ];
+      },
+      _computeIf: function (shape, type) {
+        return type == 'hsv' && shape !== 'huebox';
+      },
+      _computeIf2: function (shape, type) {
+        return type == 'hsl' && shape !== 'huebox';
+      },
+      _computeIf3: function (shape) {
+        return shape == 'huebox';
       }
-      this.disableUpdate = true;
-    },
-    
-    sliderValueChanged: function(){
-      this.setColorWheel();
-    },
-    
-    sliderLightnessChanged: function(){
-      this.setColorWheel();
-    },
-    
-    immediateColorChanged: function(){
-      this.$.preview.style.backgroundColor = "rgb("+this.immediateColor[0]+","+this.immediateColor[1]+","+this.immediateColor[2]+")";
-      var maxZ = Math.max.bind(Math, 0);
-      this.$.title.style.backgroundColor = "rgb("+maxZ(this.immediateColor[0]-40)+","+maxZ(this.immediateColor[1]-40)+","+maxZ(this.immediateColor[2]-40)+")";
-    },
-    
-    drawHuePicker: function(){
-      this._huePickerCtx = this.$.huePicker.getContext("2d");
-      var bitmap = this._huePickerCtx.getImageData(0, 0, 360, 30);
-      for (var x = 0; x < 360; x++) {
-        var hue = x;
-        var color = this.$.picker.hsv2rgb(hue,1,1);
-        bitmap.data[4 * x + 0] = color[0];
-        bitmap.data[4 * x + 1] = color[1];
-        bitmap.data[4 * x + 2] = color[2];
-        bitmap.data[4 * x + 3] = 255;
-      }
-      this._huePickerCtx.putImageData(bitmap, 0, 0);
-    },
-    
-    huePickerPickColor: function(e){
-      var rect = this.$.huePicker.getBoundingClientRect();
-      var percentage = (e.x - rect.left)/rect.width;
-      this.colorHue = percentage;
-    },
-    
-    setColor: function(){
-      this.color = this.immediateColor;
-    },
-    
-    open: function(){
-      if(this.color && this.color[1]) this.immediateColor = this.color;
-      this.immediateColorChanged();
-      this.$.dialog.open();
-      if(this.$.huePicker) this.drawHuePicker();
-    }
-
-  });
-
-</script>
-
-</polymer-element>
+    });
+  </script>
+</dom-module>
