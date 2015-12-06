@@ -18,6 +18,8 @@
     "paper-dialog": "PolymerElements/paper-dialog#~1.0.3",
     "iron-component-page": "PolymerElements/iron-component-page#~1.1.2",
     "paper-slider": "PolymerElements/paper-slider#~1.0.8",
-    "neon-animation": "PolymerElements/neon-animation#~1.0.8"
+    "neon-animation": "PolymerElements/neon-animation#~1.0.8",
+    "paper-styles": "PolymerElements/paper-styles#~1.0.13",
+    "whenever.js": "David-Mulder/whenever.js#~0.0.1"
   }
 }
