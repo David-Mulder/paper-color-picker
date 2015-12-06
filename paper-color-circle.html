@@ -76,7 +76,7 @@
           /**
            * A AA border can be drawn to prevent jagged edges on circles
            *
-           * @attribute colouredAAborder
+           * @attribute colouredAaBorder
            * @type boolean
            * @default false
            */
@@ -127,11 +127,11 @@
           /**
            * A coloured AA border can be drawn to prevent jagged edges on circles
            *
-           * @attribute colouredAAborder
+           * @attribute colouredAaBorder
            * @type Array
            * @default false
            */
-          colouredAAborder: {
+          colouredAaBorder: {
             type: Boolean,
             value: false,
             notify: true
@@ -252,7 +252,7 @@
             }
             this._moveStart = false;
           }
-          
+
           this.$.ripple.style.color = 'rgb(' + this.color['red'] + ',' + this.color['green'] + ',' + this.color['blue'] + ')';
 
           this.$.ripple.downAction(e);
@@ -346,11 +346,11 @@
           }
         },
         drawAACircle: function(){
-          if(this.colouredAAborder){
+          if(this.colouredAaBorder){
             if(this.color['green']){
               this.set('_ctx.strokeStyle', 'rgb(' + this.color['red'] + ',' + this.color['green'] + ',' + this.color['blue'] + ')');
             } else {
-              this.set('_ctx.strokeStyle', 'rgb(' + this.colouredAAborder[0] + ',' + this.colouredAAborder[1] + ',' + this.colouredAAborder[2] + ')');
+              this.set('_ctx.strokeStyle', 'rgb(' + this.colouredAaBorder[0] + ',' + this.colouredAaBorder[1] + ',' + this.colouredAaBorder[2] + ')');
             }
           } else {
             this.set('_ctx.strokeStyle', 'rgb(255,255,255)');
