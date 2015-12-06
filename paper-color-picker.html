@@ -158,15 +158,15 @@ There are three different main configurations the dialog allows, `circle`, `squa
         
         <div class="landscapeOnly">
           <label>Red:</label><br>
-          <paper-input id="redField" value="{{immediateColor.0}}" on-input="changeColorMixture" type="number" min="0" max="255"></paper-input>
+          <paper-input id="redField" value="{{immediateColor.red}}" on-input="changeColorMixture" type="number" min="0" max="255"></paper-input>
         </div>
         <div class="landscapeOnly">
           <label>Green:</label><br>
-          <paper-input id="greenField" value="{{immediateColor.1}}" on-input="changeColorMixture" type="number" min="0" max="255"></paper-input>
+          <paper-input id="greenField" value="{{immediateColor.green}}" on-input="changeColorMixture" type="number" min="0" max="255"></paper-input>
         </div>
         <div class="landscapeOnly">
           <label>Blue:</label><br>
-          <paper-input id="blueField" value="{{immediateColor.2}}" on-input="changeColorMixture" type="number" min="0" max="255"></paper-input>
+          <paper-input id="blueField" value="{{immediateColor.blue}}" on-input="changeColorMixture" type="number" min="0" max="255"></paper-input>
         </div>
         
       </div>
@@ -183,20 +183,18 @@ There are three different main configurations the dialog allows, `circle`, `squa
       is: 'paper-color-picker',
       properties: {
         /**
-         * The selected color as an array: `[red, green, blue]`
+         * The selected color as an object: `{red, green, blue}`
          *
          * @attribute color
-         * @type Array
-         * @default new Array(3)
+         * @type Object
+         * @default new Object()
          */
         color: {
-          type: Array,
-          value: function () {
-            return [
-              undefined,
-              undefined,
-              undefined
-            ];
+          type: Object,
+          value: {
+              red: undefined,
+              green: undefined,
+              blue: undefined
           },
           notify: true
         },
@@ -217,21 +215,19 @@ There are three different main configurations the dialog allows, `circle`, `squa
           value: false
         },
         /**
-         * The selected color as an array: `[red, green, blue]`
+         * The selected color as an object: `{red, green, blue}`
          * even before the user clicks ok
          *
          * @attribute immediateColor
-         * @type Array
-         * @default new Array(3)
+         * @type Object
+         * @default {red: 50, green: 50, blue: 50}
          */
         immediateColor: {
-          type: Array,
-          value: function () {
-            return [
-              50,
-              50,
-              50
-            ];
+          type: Object,
+          value: {
+              red: 50,
+              green: 50,
+              blue: 50
           },
           notify: true,
           observer: 'immediateColorChanged'
@@ -297,9 +293,9 @@ There are three different main configurations the dialog allows, `circle`, `squa
         this.setColorWheel();
       },
       immediateColorChanged: function () {
-        this.set('$.preview.style.backgroundColor', 'rgb(' + this.immediateColor[0] + ',' + this.immediateColor[1] + ',' + this.immediateColor[2] + ')');
+        this.set('$.preview.style.backgroundColor', 'rgb(' + this.immediateColor['red'] + ',' + this.immediateColor['green'] + ',' + this.immediateColor['blue'] + ')');
         var maxZ = Math.max.bind(Math, 0);
-        this.set('$.title.style.backgroundColor', 'rgb(' + maxZ(this.immediateColor[0] - 40) + ',' + maxZ(this.immediateColor[1] - 40) + ',' + maxZ(this.immediateColor[2] - 40) + ')');
+        this.set('$.title.style.backgroundColor', 'rgb(' + maxZ(this.immediateColor['red'] - 40) + ',' + maxZ(this.immediateColor['green'] - 40) + ',' + maxZ(this.immediateColor['blue'] - 40) + ')');
       },
       drawHuePicker: function () {
         this._huePickerCtx = this.$.huePicker.getContext('2d');
@@ -323,14 +319,18 @@ There are three different main configurations the dialog allows, `circle`, `squa
         var red = this.$.redField.value;
         var green = this.$.greenField.value;
         var blue = this.$.blueField.value;
-        var colors = [red, green, blue];
+        var colors = {
+          red: red,
+          green: green,
+          blue: blue
+        };
         this.set('immediateColor', colors);
       },
       setColor: function () {
         this.color = this.immediateColor;
       },
       open: function () {
-        if (this.color && this.color[1])
+        if (this.color && this.color['green'])
           this.immediateColor = this.color;
         this.immediateColorChanged();
         this.$.dialog.open();

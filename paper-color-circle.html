@@ -166,10 +166,7 @@
            * @default new Array(2)
            */
           color: {
-            type: Array,
-            value: function () {
-              return [];
-            },
+            type: Object,
             notify: true,
             observer: 'colorChanged'
           },
@@ -265,11 +262,11 @@
           var touchY = e.detail.y - rect.top;
           var color = this._ctx.getImageData(touchX, touchY, 1, 1).data;
           if (color[3] > 0) {
-            this.color = [
-              color[0],
-              color[1],
-              color[2]
-            ];
+            this.color = {
+              red: color[0],
+              green: color[1],
+              blue: color[2]
+            };
             if (redraw)
               this.redraw();
           }
@@ -301,7 +298,7 @@
             }
             this._moveStart = false;
           }
-          this.set('$.ripple.style.color', 'rgb(' + this.color[0] + ',' + this.color[1] + ',' + this.color[2] + ')');
+          this.set('$.ripple.style.color', 'rgb(' + this.color['red'] + ',' + this.color['green'] + ',' + this.color['blue'] + ')');
         },
         redraw: function () {
           var size = this.getBoundingClientRect();
@@ -394,8 +391,8 @@
         },
         drawAACircle: function () {
           if (this.colouredAAborder) {
-            if (this.color[1]) {
-              this.set('_ctx.strokeStyle', 'rgb(' + this.color[0] + ',' + this.color[1] + ',' + this.color[2] + ')');
+            if (this.color['green']) {
+              this.set('_ctx.strokeStyle', 'rgb(' + this.color['red'] + ',' + this.color['green'] + ',' + this.color['blue'] + ')');
             } else {
               this.set('_ctx.strokeStyle', 'rgb(' + this.colouredAAborder[0] + ',' + this.colouredAAborder[1] + ',' + this.colouredAAborder[2] + ')');
             }
