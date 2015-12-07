@@ -50,6 +50,7 @@
       <paper-color-input label="Pick a color..."></paper-color-input>
       <paper-color-input value='{"red":255,"green":155,"blue":55}' label="My favourite color"></paper-color-input>
       <paper-color-input value='{"red":255,"green":155,"blue":55}' shape="huebox" label="Color with hue picker"></paper-color-input>
+      <paper-color-input value='{"red":255,"green":155,"blue":55,"alpha": 0.5}' shape="huebox" label="Color with hue picker and alpha" allow-alpha></paper-color-input>
       <paper-color-input value='{"red":0,"green":255,"blue":0}' shape="huebox" label="Color with hue picker"></paper-color-input>
       <paper-color-input value='{"red":12,"green":34,"blue":56}' shape="square" label="Color with square picker"></paper-color-input>
     </div>
@@ -105,13 +106,21 @@
         
         <paper-color-picker type="hsl"></paper-color-picker>
       </div>
-      
+
       <div>
         <paper-button raised onclick="this.parentElement.querySelector('paper-color-picker').open()">
           Standard picker with set color
         </paper-button>
-        
+
         <paper-color-picker immediate-color='{"red":255,"green":155,"blue":55}'></paper-color-picker>
+      </div>
+
+      <div>
+        <paper-button raised onclick="this.parentElement.querySelector('paper-color-picker').open()">
+          Standard picker with alpha
+        </paper-button>
+
+        <paper-color-picker immediate-color='{"red":255,"green":155,"blue":55, "alpha": 1}' allow-alpha></paper-color-picker>
       </div>
       
     </div>

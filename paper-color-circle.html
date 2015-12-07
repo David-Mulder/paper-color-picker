@@ -175,6 +175,11 @@
           color: {
             type: Object,
             notify: true,
+            value: {
+              red: undefined,
+              green: undefined,
+              blue: undefined
+            },
             observer: 'colorChanged'
           },
           /**
@@ -279,11 +284,9 @@
           var touchY = e.detail.y - rect.top;
           var color = this._ctx.getImageData(touchX, touchY, 1, 1).data;
           if(color[3] > 0){
-            this.color = {
-              red: color[0],
-              green: color[1],
-              blue: color[2]
-            };
+            this.set('color.red', color[0]);
+            this.set('color.green', color[1]);
+            this.set('color.blue', color[2]);
             if(redraw)
               this.redraw();
           }
