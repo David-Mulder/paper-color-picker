@@ -4,9 +4,22 @@
 <link rel="import" href="./paper-color-picker.html">
 
 <!--
+This component contains 3 elements:
+
+ - `<paper-color-circle>` : An element drawing a color space onto a canvas
+ - `<paper-color-picker>` : An element containing a material design picker dialog for colors
+ - `<paper-color-input>` : An element that displays an input that allows changing of the color through a color picker dialog.
+
+Shape and colour spaces
+---
+There are three different main configurations all 3 elements allow: `circle`, `square`
+ or `huebox`. This is called the `[shape]` of the color circle. Additionally in the case of `circle` and `square` it can
+  be specified whether the colours should be generated from the `hsv` or `hsl` colour space.
+
+    <paper-color-input shape="square" type="hsl"></paper-color-input>
+
 
 @demo demo/index.html
-@hero hero.svg
 -->
 
 <dom-module id="paper-color-input">
@@ -28,6 +41,9 @@
 				transform-origin: 0px 0px;
 				transform: translateY(15.5px) rotate(-45deg);
 			}
+			#input{
+				cursor: pointer;
+			}
 		</style>
 		<paper-input-container id="input" always-float-label="{{_isValueDefined(value.*)}}">
 			<label>{{label}}</label>
@@ -45,14 +61,35 @@
 		Polymer({
 			is: 'paper-color-input',
 			properties: {
+				/**
+				 * The currently picked color. This is an object with a `red`, `green` and `blue` property.
+				 *
+				 * @attribute label
+				 * @type String
+				 * @default ''
+				 */
 				value: {
 					type: Object,
 					notify: true
 				},
+				/**
+				 * The label for this input.
+				 *
+				 * @attribute label
+				 * @type String
+				 * @default ''
+				 */
 				label: {
 					type: String,
-					value: 'Color'
+					value: ''
 				},
+				/**
+				 * The name of the colour as shown in the input field
+				 *
+				 * @attribute color-name
+				 * @type String
+				 * @default ''
+				 */
 				colorName: String,
 
 				/**

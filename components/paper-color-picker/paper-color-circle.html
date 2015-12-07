@@ -127,7 +127,7 @@
            * @type boolean
            * @default false
            */
-          AAborder: {
+          AaBorder: {
             type: Boolean,
             value: true,
             notify: true
@@ -154,7 +154,7 @@
             type: Number,
             value: 0
           },
-          _setAAborder: {
+          _setAaBorder: {
             value: function(){
               return undefined;
             }
@@ -283,14 +283,14 @@
           }
         },
         onDown: function(e){
-          this._setAAborder = this.AAborder;
+          this._setAaBorder = this.AaBorder;
           this.pickColor(e, true);
           this._down = true;
         },
         onMove: function(e){
           if(!this._moveStart){
-            if(this._setAAborder && this._down){
-              this.AAborder = false;
+            if(this._setAaBorder && this._down){
+              this.AaBorder = false;
               this.pickColor(e, true);
             } else {
               this.pickColor(e, false);
@@ -303,8 +303,8 @@
         onUp: function(e){
           this._down = false;
           if(this._moveStart){
-            if(this._setAAborder){
-              this.AAborder = this._setAAborder;
+            if(this._setAaBorder){
+              this.AaBorder = this._setAaBorder;
               this.redraw();
             }
             this._moveStart = false;
@@ -397,7 +397,7 @@
             };
           };
           this._ctx.putImageData(bitmap, 0, 0);
-          if(this.AAborder && this.shape === 'circle'){
+          if(this.AaBorder && this.shape === 'circle'){
             //Getting a nice anti aliased edge using canvas is hard, so instead a white circle is draw over the border
             this.drawAACircle();
           }
