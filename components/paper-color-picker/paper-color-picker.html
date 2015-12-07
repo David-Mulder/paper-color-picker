@@ -115,6 +115,19 @@ and to open the dialog
       padding-left:0px;
       padding-right:0px;
     }
+    #rgb{
+      display:flex;
+    }
+    #rgb paper-input{
+      flex: 1;
+      margin: 0px 5px;
+    }
+    #rgb paper-input:first-child{
+      margin-left: 0px;
+    }
+    #rgb paper-input:last-child{
+      margin-right: 0px;
+    }
     @media only screen and (orientation : portrait){
       .portraitOnly {
         display:block;
@@ -200,9 +213,11 @@ and to open the dialog
 
         <div hidden$="{{!advanced}}">
           <!--<div class="landscapeOnly">-->
+          <div id="rgb">
             <paper-input id="redField" value="{{immediateColor.red}}" on-input="changeColorMixture" type="number" min="0" max="255" label="Red"></paper-input>
             <paper-input id="greenField" value="{{immediateColor.green}}" on-input="changeColorMixture" type="number" min="0" max="255" label="Green"></paper-input>
             <paper-input id="blueField" value="{{immediateColor.blue}}" on-input="changeColorMixture" type="number" min="0" max="255" label="Blue"></paper-input>
+          </div>
           <!--</div>-->
         </div>
       </div>

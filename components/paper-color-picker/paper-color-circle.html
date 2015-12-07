@@ -13,6 +13,12 @@
       min-width: 100px;
       min-height: 100px;
       cursor: crosshair;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
     }
     #ripple{
       position: absolute;
@@ -438,7 +444,7 @@
             this.lightness = hsl[2];
           }else if(this.type == 'hsv'){
             var hsv= this.rgb2hsv(this.color.red, this.color.green, this.color.blue);
-            this.hue = hsv[0];
+            if(!isNaN(hsv[0])) this.hue = hsv[0];
             this.value = hsv[2];
           }
           if(this._domReady)
