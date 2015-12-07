@@ -14,8 +14,6 @@ and to open the dialog
 
 @demo demo/index.html
 -->
-<html>
-<head>
 <link href="../polymer/polymer.html" rel="import">
 <link href="../iron-flex-layout/iron-flex-layout.html" rel="import">
 <link href="../paper-slider/paper-slider.html" rel="import">
@@ -233,7 +231,7 @@ and to open the dialog
         </template>
 
         <template is="dom-if" if="{{_and(allowAlpha,_initialAlphaValueHackApplied)}}">
-          <paper-input-container attr-for-value="immediate-value">
+          <paper-input-container attr-for-value="immediate-value" hidden$="{{!_or(alwaysShowAlpha, advanced)}}">
             <label>Alpha (transparency)</label>
             <paper-slider id="alphaPicker" class="paper-input-input" min="0" max="1" step="0.01" value="{{_initialAlphaValueHack}}" immediate-value="{{immediateColor.alpha}}"></paper-slider>
           </paper-input-container>
@@ -316,6 +314,10 @@ and to open the dialog
             type: Boolean,
             value: false
           },
+          /**
+           * Show alpha slider always instead of only in the advanced settings
+           */
+          alwaysShowAlpha: Boolean,
           /**
            * Whether to allow changing the transparency of the picked color
            */
@@ -400,6 +402,9 @@ and to open the dialog
           if(!this.advanced){
             this.set('advanced', false);
           }
+          if(!this.alwaysShowAlpha){
+            this.set('alwaysShowAlpha', false);
+          }
           if(!this.noFullNames){
             this.set('noFullNames', false);
             retrieveColorNames(this);
@@ -419,6 +424,9 @@ and to open the dialog
         },
         _and: function(a,b){
           return a && b;
+        },
+        _or: function(a,b){
+          return a || b;
         },
         _isColorDefined: function(){
           return this.color.red >= 0 && this.color.green >= 0 && this.color.blue >= 0;

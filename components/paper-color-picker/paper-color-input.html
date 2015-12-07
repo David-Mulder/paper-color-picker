@@ -55,17 +55,32 @@ There are three different main configurations all 3 elements allow: `circle`, `s
 			#input{
 				cursor: pointer;
 			}
+			span.dark{
+				font-size: 10px;
+				color: rgba(0,0,0,.8);
+				font-family: monospace;
+			}
+			span.light{
+				font-size: 10px;
+				font-family: monospace;
+				color: rgba(0,0,0,.3);
+			}
 		</style>
 		<paper-input-container id="input" always-float-label="{{_isValueDefined(value.*)}}">
 			<label>{{label}}</label>
-			<div class="paper-input-input">{{colorName}}&nbsp;</div>
+			<div class="paper-input-input">
+				<span>{{colorName}}</span>&nbsp;<!--
+				--><template is="dom-if" if="{{withDescription}}"><!--
+					--><span class="light">rgb<template is="dom-if" if="{{allowAlpha}}">a</template>(</span><span class="dark">{{value.red}}</span><span class="light">, </span><span class="dark">{{value.green}}</span><span class="light">, </span><span class="dark">{{value.blue}}</span><template is="dom-if" if="{{allowAlpha}}"><span class="light">, </span><span class="dark">{{value.alpha}}</span></template><span class="light">)</span>
+				</template>
+			</div>
 			<div id="colorPreview" suffix>
 				<div id="color" style$="{{_computeBackgroundColor(value.*)}}"></div>
 				<div id="noColor" hidden="{{_isValueDefined(value.*)}}"></div>
 			</div>
 		</paper-input-container>
 
-		<paper-color-picker id="picker" color="{{value}}" color-as-string="{{colorName}}" shape="{{shape}}" type="{{type}}" allow-alpha="{{allowAlpha}}"></paper-color-picker>
+		<paper-color-picker id="picker" color="{{value}}" color-as-string="{{colorName}}" shape="{{shape}}" type="{{type}}" allow-alpha="{{allowAlpha}}" always-show-alpha="{{alwaysShowAlpha}}"></paper-color-picker>
 
 	</template>
 
@@ -133,6 +148,14 @@ There are three different main configurations all 3 elements allow: `circle`, `s
 				 * Whether to allow changing the transparency of the picked color
 				 */
 				allowAlpha: Boolean,
+				/**
+				 * Whether to show the color also as a string
+				 */
+				withDescription: Boolean,
+				/**
+				 * Show alpha slider always instead of only in the advanced settings
+				 */
+				alwaysShowAlpha: Boolean,
 			},
 			behaviors: [
 				/* Polymer.IronFormElementBehavior */ // disabled till https://github.com/Polymer/polymer/issues/3167 gets fixed

@@ -23,11 +23,11 @@
     "whenever.js": "David-Mulder/whenever.js#~0.0.1",
     "iron-form-element-behavior": "PolymerElements/iron-form-element-behavior#~1.0.6"
   },
-  "_release": "68df05e009",
+  "_release": "f1e50de318",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "68df05e009499b23675286da7c35811de5a42f2d"
+    "commit": "f1e50de318bb868b04c57e3bbf66cdafd04149f4"
   },
   "_source": "git://github.com/David-Mulder/paper-color-picker.git",
   "_target": "master",
