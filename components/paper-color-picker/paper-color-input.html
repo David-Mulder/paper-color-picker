@@ -33,6 +33,17 @@ There are three different main configurations all 3 elements allow: `circle`, `s
 				border: 1px solid rgba(0,0,0,.1);
 				border-radius: 1px;
 				margin: 2px;
+				position: relative;
+				background-image: linear-gradient(to right, #ffffff 1%,#ffffff 50%,#eee 50%,#eee 100%), linear-gradient(to right, #eee 1%,#eee 50%,#ffffff 50%,#ffffff 100%);
+				background-size: 16px 8px,  16px 8px;
+				background-repeat: repeat-x, repeat;
+			}
+			#color{
+				position: absolute;
+				left: 0px;
+				top: 0px;
+				right: 0px;
+				bottom: 0px;
 			}
 			#noColor{
 				width: 22.6px;
@@ -48,12 +59,13 @@ There are three different main configurations all 3 elements allow: `circle`, `s
 		<paper-input-container id="input" always-float-label="{{_isValueDefined(value.*)}}">
 			<label>{{label}}</label>
 			<div class="paper-input-input">{{colorName}}&nbsp;</div>
-			<div id="colorPreview" suffix style$="{{_computeBackgroundColor(value.*)}}">
+			<div id="colorPreview" suffix>
+				<div id="color" style$="{{_computeBackgroundColor(value.*)}}"></div>
 				<div id="noColor" hidden="{{_isValueDefined(value.*)}}"></div>
 			</div>
 		</paper-input-container>
 
-		<paper-color-picker id="picker" color="{{value}}" color-as-string="{{colorName}}" shape="{{shape}}" type="{{type}}"></paper-color-picker>
+		<paper-color-picker id="picker" color="{{value}}" color-as-string="{{colorName}}" shape="{{shape}}" type="{{type}}" allow-alpha="{{allowAlpha}}"></paper-color-picker>
 
 	</template>
 
@@ -117,6 +129,10 @@ There are three different main configurations all 3 elements allow: `circle`, `s
 					value: 'hsv',
 					notify: true
 				},
+				/**
+				 * Whether to allow changing the transparency of the picked color
+				 */
+				allowAlpha: Boolean,
 			},
 			behaviors: [
 				/* Polymer.IronFormElementBehavior */ // disabled till https://github.com/Polymer/polymer/issues/3167 gets fixed
@@ -140,7 +156,13 @@ There are three different main configurations all 3 elements allow: `circle`, `s
 				this.$.picker.open();
 			},
 			_computeBackgroundColor: function(){
-				return 'background: rgb('+this.value.red+', '+this.value.green+','+this.value.blue+')';
+				if(!this._isValueDefined()){
+					return 'background: white';
+				}
+				if(typeof this.value.alpha === 'undefined'){
+					this.value.alpha = 1;
+				}
+				return 'background: rgba('+this.value.red+', '+this.value.green+','+this.value.blue+', '+this.value.alpha+')';
 			},
 			_isValueDefined: function(){
 				return this.value.red >= 0 && this.value.green >= 0 && this.value.blue >= 0;

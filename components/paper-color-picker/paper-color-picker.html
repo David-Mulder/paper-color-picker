@@ -52,8 +52,8 @@ and to open the dialog
     }
     
     #preview {
-      text-align:center;
       padding: 0px;
+      position: relative;
     }
     
     paper-slider {
@@ -92,13 +92,14 @@ and to open the dialog
       margin: auto;
     }
     #title {
+      position: absolute;
       text-align: left;
       color: white;
       @apply(--paper-font-common-base);
       font-size: 28px;
       font-weight: 400;
       letter-spacing: -.01em;
-      line-height: 36px;
+      line-height: 38px;
       overflow: hidden;
       text-overflow: ellipsis;
       padding: 20px;
@@ -106,6 +107,14 @@ and to open the dialog
     }
     #preview {
       margin-top: 0px;
+      background-image:
+              linear-gradient(45deg, #eee 25%, transparent 25%),
+              linear-gradient(45deg, transparent 75%, #eee 75%),
+              linear-gradient(45deg, #eee 25%, transparent 25%),
+              linear-gradient(45deg, transparent 75%, #eee 75%);
+
+      background-size:24px 24px;
+      background-position:0 0, 0px 0px, 12px 12px, 12px 12px;
     }
     :host([advanced]) {
 
@@ -128,9 +137,20 @@ and to open the dialog
     #rgb paper-input:last-child{
       margin-right: 0px;
     }
+    #color{
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      right: 0px;
+      bottom: 0px;
+      z-index: 0;
+    }
     @media only screen and (orientation : portrait){
       .portraitOnly {
         display:block;
+      }
+      #preview{
+        min-height: 91px;
       }
 
       #dialog {
@@ -177,6 +197,7 @@ and to open the dialog
                 class="color-picker-dialog">
 
     <div id="preview">
+      <div id="color"></div>
       <div id="title">
         <template is="dom-if" if="{{noFullNames}}">
           Color Picker
@@ -209,6 +230,13 @@ and to open the dialog
             <canvas id="huePicker" class="paper-input-input" on-tap="huePickerPickColor" width="360" height="1"></canvas>
           </paper-input-container>
           <!--<paper-slider id="hueSlider" min="0" max="100" value="50" immediate-value="{{sliderHue}}"></paper-slider>-->
+        </template>
+
+        <template is="dom-if" if="{{_and(allowAlpha,_initialAlphaValueHackApplied)}}">
+          <paper-input-container attr-for-value="immediate-value">
+            <label>Alpha (transparency)</label>
+            <paper-slider id="alphaPicker" class="paper-input-input" min="0" max="1" step="0.01" value="{{_initialAlphaValueHack}}" immediate-value="{{immediateColor.alpha}}"></paper-slider>
+          </paper-input-container>
         </template>
 
         <div hidden$="{{!advanced}}">
@@ -267,7 +295,8 @@ and to open the dialog
             value: {
               red: undefined,
               green: undefined,
-              blue: undefined
+              blue: undefined,
+              alpha: 1
             },
             notify: true
           },
@@ -288,6 +317,10 @@ and to open the dialog
             value: false
           },
           /**
+           * Whether to allow changing the transparency of the picked color
+           */
+          allowAlpha: Boolean,
+          /**
            * The selected color as an object: `{red, green, blue}`
            * even before the user clicks ok
            *
@@ -300,10 +333,10 @@ and to open the dialog
             value: {
               red: 0,
               green: 150,
-              blue: 136
+              blue: 136,
+              alpha: 1
             },
-            notify: true,
-            observer: 'immediateColorChanged'
+            notify: true
           },
           /**
            * *square*, *circle* or *huebox*
@@ -360,6 +393,9 @@ and to open the dialog
             observer: '_recenterDialog'
           }
         },
+        observers: [
+          'immediateColorChanged(immediateColor.*)'
+        ],
         ready: function(){
           if(!this.advanced){
             this.set('advanced', false);
@@ -368,6 +404,24 @@ and to open the dialog
             this.set('noFullNames', false);
             retrieveColorNames(this);
           }
+          this.async(function(){
+            if(this._isColorDefined()){
+              console.log(this.color);
+              if(this.allowAlpha && typeof this.color.alpha !== 'undefined'){
+                this._initialAlphaValueHack = this.color.alpha;
+                //Polymer.dom(this.root).querySelector("#alphaPicker").set('value', this.color.alpha);
+              }else{
+                this._initialAlphaValueHack = 1;
+              }
+              this._initialAlphaValueHackApplied = true;
+            }
+          });
+        },
+        _and: function(a,b){
+          return a && b;
+        },
+        _isColorDefined: function(){
+          return this.color.red >= 0 && this.color.green >= 0 && this.color.blue >= 0;
         },
         setColorWheel: function(){
           if (!this.disableUpdate){
@@ -399,7 +453,10 @@ and to open the dialog
           return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
         },
         immediateColorChanged: function(){
-          this.$.preview.style.backgroundColor = 'rgb(' + this.immediateColor['red'] + ',' + this.immediateColor['green'] + ',' + this.immediateColor['blue'] + ')';
+          if(typeof this.immediateColor.alpha == 'undefined'){
+            this.immediateColor.alpha = 1;
+          }
+          this.$.color.style.backgroundColor = 'rgba(' + this.immediateColor['red'] + ',' + this.immediateColor['green'] + ',' + this.immediateColor['blue'] + ',' + this.immediateColor['alpha'] + ')';
           if(!this.noFullNames){
             colorNamesRetrieved.whenReady(function(colors){
               var closest = {
@@ -415,7 +472,7 @@ and to open the dialog
               });
               this.immediateColorAsString = closest.color.title;
 
-              var luminance = this._calculateLuminance.apply(this, closest.color.rgb);
+              var luminance = Math.max(this._calculateLuminance.apply(this, closest.color.rgb), Math.min(1,1-this.immediateColor.alpha+0.2));
               //shy: ­
               var opacity = Math.max(0,luminance -.5) *1.8;
               opacity = Math.round(opacity*100)/100;
@@ -456,8 +513,11 @@ and to open the dialog
           this.set('immediateColor', colors);
         },
         setColor: function(){
-          this.color = this.immediateColor;
-          this.colorAsString = this.immediateColorAsString;
+          this.set('color.red', this.immediateColor.red);
+          this.set('color.green', this.immediateColor.green);
+          this.set('color.blue', this.immediateColor.blue);
+          this.set('color.alpha', this.immediateColor.alpha);
+          this.set('colorAsString', this.immediateColorAsString);
         },
         open: function(){
           if (this.color && this.color['green'])
