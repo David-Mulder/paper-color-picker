@@ -69,6 +69,53 @@
 
         return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
       }
+      function rgb2hsl(r, g, b){
+        r /= 255, g /= 255, b /= 255;
+        var max = Math.max(r, g, b), min = Math.min(r, g, b);
+        var h, s, l = (max + min) / 2;
+
+        if(max == min){
+          h = s = 0;
+        }else{
+          var d = max - min;
+          s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+          switch(max){
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+          }
+          h /= 6;
+        }
+
+        return [h, s, l];
+      }
+      var rgb2hsv = function(r,g,b) {
+        var b, delta, g, h, max, min, r, s, v;
+        min = Math.min(r, g, b);
+        max = Math.max(r, g, b);
+        delta = max - min;
+        v = max / 255.0;
+        if (max === 0) {
+          h = Number.NaN;
+          s = 0;
+        } else {
+          s = delta / max;
+          if (r === max) {
+            h = (g - b) / delta;
+          }
+          if (g === max) {
+            h = 2 + (b - r) / delta;
+          }
+          if (b === max) {
+            h = 4 + (r - g) / delta;
+          }
+          h *= 60;
+          if (h < 0) {
+            h += 360;
+          }
+        }
+        return [h/360, s, v];
+      };
 
       Polymer({
         is: 'paper-color-circle',
@@ -141,9 +188,19 @@
               return hsl2rgb;
             }
           },
+          rgb2hsl: {
+            value: function(){
+              return rgb2hsl;
+            }
+          },
           hsv2rgb: {
             value: function(){
               return hsv2rgb;
+            }
+          },
+          rgb2hsv: {
+            value: function(){
+              return rgb2hsv;
             }
           },
           /**
@@ -375,6 +432,15 @@
             this.redraw();
         },
         colorChanged: function(){
+          if(this.type == 'hsl'){
+            var hsl = this.rgb2hsl(this.color.red, this.color.green, this.color.blue);
+            this.hue = hsl[0];
+            this.lightness = hsl[2];
+          }else if(this.type == 'hsv'){
+            var hsv= this.rgb2hsv(this.color.red, this.color.green, this.color.blue);
+            this.hue = hsv[0];
+            this.value = hsv[2];
+          }
           if(this._domReady)
             this.redraw();
         },

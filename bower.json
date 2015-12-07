@@ -20,6 +20,7 @@
     "paper-slider": "PolymerElements/paper-slider#~1.0.8",
     "neon-animation": "PolymerElements/neon-animation#~1.0.8",
     "paper-styles": "PolymerElements/paper-styles#~1.0.13",
-    "whenever.js": "David-Mulder/whenever.js#~0.0.1"
+    "whenever.js": "David-Mulder/whenever.js#~0.0.1",
+    "iron-form-element-behavior": "PolymerElements/iron-form-element-behavior#~1.0.6"
   }
 }

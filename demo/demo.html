@@ -1,12 +1,3 @@
-<!--
-    @license
-    Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
-    This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-    The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-    The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-    Code distributed by Google as part of the polymer project is also
-    subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
 <!doctype html>
 <html>
 <head>
@@ -19,9 +10,11 @@
 
   <link href="../../paper-dialog/paper-dialog.html" rel="import">
   <link href="../../paper-button/paper-button.html" rel="import">
+  <link href="../../paper-input/paper-input.html" rel="import">
 
   <link href="../paper-color-circle.html" rel="import">
   <link href="../paper-color-picker.html" rel="import">
+  <link href="../paper-color-input.html" rel="import">
 
   <style shim-shadowdom>
 
@@ -65,7 +58,18 @@
     <paper-color-circle style="margin:20px;" type="hsl" shape="huebox"></paper-color-circle>
 
   </section>
-  
+
+  <section>
+    <h1><code>&lt;paper-color-input&gt;</code></h1>
+    <div style="width: 300px;">
+      <paper-color-input></paper-color-input>
+      <paper-color-input value='{"red":255,"green":155,"blue":55}'></paper-color-input>
+      <paper-color-input value='{"red":255,"green":155,"blue":55}' shape="huebox" label="Color with hue picker"></paper-color-input>
+      <paper-color-input value='{"red":0,"green":255,"blue":0}' shape="huebox" label="Color with hue picker"></paper-color-input>
+      <paper-color-input value='{"red":12,"green":34,"blue":56}' shape="square" label="Color with square picker"></paper-color-input>
+    </div>
+  </section>
+
   <section>
     <h1>Dialog</h1>
 

@@ -82,7 +82,7 @@ There are three different main configurations the dialog allows, `circle`, `squa
       margin:-10px 0px 0px 0px;
     }
     #huePicker {
-      width:calc(100% - 30px);
+      width:255px;
       margin:15px;
       height:15px;
       border-radius:2px;
@@ -99,7 +99,7 @@ There are three different main configurations the dialog allows, `circle`, `squa
       padding: 0px;
     }
     #detail {
-      min-width: 300px;
+      min-width: 240px;
       margin: 0px;
       padding: 0px;
     }
@@ -118,13 +118,18 @@ There are three different main configurations the dialog allows, `circle`, `squa
       overflow: hidden;
       text-overflow: ellipsis;
       padding: 20px;
-      padding-bottom: 25px;
+      padding-bottom: 30px;
     }
     #preview {
       margin-top: 0px;
     }
     :host([advanced]) {
 
+    }
+    .buttons{
+      margin-top:20px;
+      padding-left:0px;
+      padding-right:0px;
     }
     @media only screen and (orientation : portrait){
       .portraitOnly {
@@ -175,11 +180,18 @@ There are three different main configurations the dialog allows, `circle`, `squa
                 class="color-picker-dialog">
 
     <div id="preview">
-      <div id="title">{{colorAsString}}</div>
+      <div id="title">
+        <template is="dom-if" if="{{noFullNames}}">
+          Color Picker
+        </template>
+        <template is="dom-if" if="{{!noFullNames}}">
+          {{immediateColorAsString}}
+        </template>
+      </div>
     </div>
     <div id="detail">
 
-      <paper-color-circle id="picker"  shape="{{shape}}" type="{{type}}" value="{{colorValue}}" color="{{immediateColor}}" hue="{{colorHue}}" lightness="{{colorLightness}}"></paper-color-circle>
+      <paper-color-circle id="picker"  shape="{{shape}}" type="{{type}}" value="{{colorValue}}" color="{{immediateColor}}" hue="{{colorHue}}" lightness="{{colorLightness}}" on-lightness-changed="_setSliders" on-value-changed="_setSliders"></paper-color-circle>
 
       <div id="details">
         <template is="dom-if" if="{{_showValueSlider(shape, type)}}">
@@ -197,7 +209,7 @@ There are three different main configurations the dialog allows, `circle`, `squa
         <template is="dom-if" if="{{_showHuePicker(shape)}}">
           <paper-input-container attr-for-value="id">
             <label>Hue:</label>
-            <canvas id="huePicker" class="paper-input-input" on-tap="huePickerPickColor" width="255" height="1"></canvas>
+            <canvas id="huePicker" class="paper-input-input" on-tap="huePickerPickColor" width="360" height="1"></canvas>
           </paper-input-container>
           <!--<paper-slider id="hueSlider" min="0" max="100" value="50" immediate-value="{{sliderHue}}"></paper-slider>-->
         </template>
@@ -287,9 +299,9 @@ There are three different main configurations the dialog allows, `circle`, `squa
           immediateColor: {
             type: Object,
             value: {
-              red: 19,
-              green: 45,
-              blue: 203
+              red: 0,
+              green: 150,
+              blue: 136
             },
             notify: true,
             observer: 'immediateColorChanged'
@@ -335,8 +347,13 @@ There are three different main configurations the dialog allows, `circle`, `squa
           noFullNames: {
             type: Boolean
           },
+          immediateColorAsString: {
+            type: String,
+            notify: true
+          },
           colorAsString: {
-            type: String
+            type: String,
+            notify: true
           },
           advanced: {
             type: Boolean,
@@ -349,6 +366,7 @@ There are three different main configurations the dialog allows, `circle`, `squa
             this.set('advanced', false);
           }
           if(!this.noFullNames){
+            this.set('noFullNames', false);
             retrieveColorNames(this);
           }
         },
@@ -396,11 +414,13 @@ There are three different main configurations the dialog allows, `circle`, `squa
                   closest.distance = distance;
                 }
               });
-              this.colorAsString = closest.color.title;
+              this.immediateColorAsString = closest.color.title;
 
               var luminance = this._calculateLuminance.apply(this, closest.color.rgb);
               //shy: ­
-              this.$.title.style.textShadow = 'rgba(0,0,0,'+ (Math.round(luminance*100)/100 *.8) +') 1px 0 50px';
+              var opacity = Math.max(0,luminance -.5) *1.8;
+              opacity = Math.round(opacity*100)/100;
+              this.$.title.style.textShadow = 'rgba(0,0,0,'+ opacity +') 1px 0 60px';
               //this.$.title.style.opacity = luminance < 0.6 ? .9 : 0.5;
             }.bind(this));
           }
@@ -438,6 +458,7 @@ There are three different main configurations the dialog allows, `circle`, `squa
         },
         setColor: function(){
           this.color = this.immediateColor;
+          this.colorAsString = this.immediateColorAsString;
         },
         open: function(){
           if (this.color && this.color['green'])
@@ -469,6 +490,19 @@ There are three different main configurations the dialog allows, `circle`, `squa
         _recenterDialog: function(){
           if(this.$.dialog.opened)
             this.$.dialog.center();
+        },
+        _setSliders: function(){
+          this.async(function(){
+            var valueSlider = Polymer.dom(this.root).querySelector('#valueSlider');
+            if(valueSlider){
+              valueSlider.set('value', this.colorValue*100);
+            }
+            var lightnessSlider = Polymer.dom(this.root).querySelector('#lightnessSlider');
+            if(lightnessSlider){
+              lightnessSlider.set('value', this.colorLightness*100);
+            }
+          });
+
         }
       });
     })();
