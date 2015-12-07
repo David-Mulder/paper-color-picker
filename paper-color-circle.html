@@ -133,10 +133,9 @@
            * @type boolean
            * @default false
            */
-          AaBorder: {
+          noAaBorder: {
             type: Boolean,
-            value: true,
-            notify: true
+            value: false
           },
           _ctx: {
             type: Object,
@@ -278,7 +277,7 @@
             observer: 'valueChanged'
           }
         },
-        pickColor: function(e, redraw){
+        pickColor: function(e){
           var rect = this.getBoundingClientRect();
           var touchX = e.detail.x - rect.left;
           var touchY = e.detail.y - rect.top;
@@ -287,38 +286,17 @@
             this.set('color.red', color[0]);
             this.set('color.green', color[1]);
             this.set('color.blue', color[2]);
-            if(redraw)
+            if(!this.noAaBorder && this.colouredAaBorder)
               this.redraw();
           }
         },
         onDown: function(e){
-          this._setAaBorder = this.AaBorder;
           this.pickColor(e, true);
-          this._down = true;
         },
         onMove: function(e){
-          if(!this._moveStart){
-            if(this._setAaBorder && this._down){
-              this.AaBorder = false;
-              this.pickColor(e, true);
-            } else {
-              this.pickColor(e, false);
-            }
-            this._moveStart = true;
-          } else {
-            this.pickColor(e, false);
-          }
+          this.pickColor(e);
         },
         onUp: function(e){
-          this._down = false;
-          if(this._moveStart){
-            if(this._setAaBorder){
-              this.AaBorder = this._setAaBorder;
-              this.redraw();
-            }
-            this._moveStart = false;
-          }
-
           this.$.ripple.style.color = 'rgb(' + this.color['red'] + ',' + this.color['green'] + ',' + this.color['blue'] + ')';
 
           this.$.ripple.downAction(e);
@@ -327,33 +305,70 @@
           })
         },
         redraw: function(){
-          var size = this.getBoundingClientRect();
-          var width = size.width;
-          var height = size.height;
-          if(width == 0 || height == 0){
-            var computedStyle = window.getComputedStyle(this);
-            width = parseInt(computedStyle.width);
-            height = parseInt(computedStyle.height);
-          }
-          this.$.canvas.width = width;
-          this.$.canvas.height = height;
-          this.size = Math.min(width, height);
-          var halfsize = this.size/2;
-          var bitmap = this._ctx.getImageData(0, 0, this.size, this.size);
-          var smoothBorder = 0;
-          for (var y = 0; y < this.size; y++){
-            for (var x = 0; x < this.size; x++){
+          this.debounce('redraw', function(){
+            var size = this.getBoundingClientRect();
+            var width = size.width;
+            var height = size.height;
+            if(width == 0 || height == 0){
+              var computedStyle = window.getComputedStyle(this);
+              width = parseInt(computedStyle.width);
+              height = parseInt(computedStyle.height);
+            }
+            this.$.canvas.width = width;
+            this.$.canvas.height = height;
+            this.size = Math.min(width, height);
+            var halfsize = this.size/2;
+            var bitmap = this._ctx.getImageData(0, 0, this.size, this.size);
+            var smoothBorder = 0;
+            for (var y = 0; y < this.size; y++){
+              for (var x = 0; x < this.size; x++){
 
-              // offset for the 4 RGBA values in the data array
-              var offset = 4 * ((y * this.size) + x);
+                // offset for the 4 RGBA values in the data array
+                var offset = 4 * ((y * this.size) + x);
 
-              if(this.shape === 'circle'){
-                var distanceFromCenter = Math.sqrt(Math.pow(y - halfsize, 2) + Math.pow(x - halfsize, 2)) / halfsize;
-                if(distanceFromCenter < (halfsize+smoothBorder)/halfsize - 0.01){
-                  var hue = Math.atan2(y - halfsize, x - halfsize) * (180 / Math.PI);
-                  if(hue < 0) hue+=360;
-                  var saturation = Math.round(distanceFromCenter*1000)/1000;
-                  saturation = Math.min(1, saturation);
+                if(this.shape === 'circle'){
+                  var distanceFromCenter = Math.sqrt(Math.pow(y - halfsize, 2) + Math.pow(x - halfsize, 2)) / halfsize;
+                  if(distanceFromCenter < (halfsize+smoothBorder)/halfsize - 0.01){
+                    var hue = Math.atan2(y - halfsize, x - halfsize) * (180 / Math.PI);
+                    if(hue < 0) hue+=360;
+                    var saturation = Math.round(distanceFromCenter*1000)/1000;
+                    saturation = Math.min(1, saturation);
+                    if(this.type === 'hsv'){
+                      var value = Math.round(this.value*1000)/1000;
+                      var color = hsv2rgb(hue, saturation, value);
+                    }else if(this.type === 'hsl'){
+                      var lightness = Math.round(this.lightness*1000)/1000;
+                      var color = hsl2rgb(hue, saturation, lightness);
+                    }
+
+                    // fill RGBA values
+                    bitmap.data[offset + 0] = color[0];
+                    bitmap.data[offset + 1] = color[1];
+                    bitmap.data[offset + 2] = color[2];
+                    if(distanceFromCenter - 1 >= 0){
+                      var distance = Math.round((distanceFromCenter - 1)*halfsize);
+
+                      bitmap.data[offset + 3] = 255*((smoothBorder-distance)/smoothBorder); // transparency
+                    }else{
+                      bitmap.data[offset + 3] = 255; // no transparency
+                    }
+                  };
+                }else if(this.shape === 'huebox'){
+                  var saturation = x/width;
+                  var hue = Math.round(this.hue*1000)/1000*360;
+                  var third = 1-y/this.size;
+                  if(this.type === 'hsv'){
+                    var color = hsv2rgb(hue, saturation, third);
+                  }else if(this.type === 'hsl'){
+                    var color = hsl2rgb(hue, saturation, third);
+                  }
+                  bitmap.data[offset + 0] = color[0];
+                  bitmap.data[offset + 1] = color[1];
+                  bitmap.data[offset + 2] = color[2];
+                  bitmap.data[offset + 3] = 255; // no transparency
+                }else if(this.shape === 'square'){
+                  var hue = x/width*360;
+                  var saturation = 1-y/this.size;
                   if(this.type === 'hsv'){
                     var value = Math.round(this.value*1000)/1000;
                     var color = hsv2rgb(hue, saturation, value);
@@ -361,55 +376,20 @@
                     var lightness = Math.round(this.lightness*1000)/1000;
                     var color = hsl2rgb(hue, saturation, lightness);
                   }
-
-                  // fill RGBA values
                   bitmap.data[offset + 0] = color[0];
                   bitmap.data[offset + 1] = color[1];
                   bitmap.data[offset + 2] = color[2];
-                  if(distanceFromCenter - 1 >= 0){
-                    var distance = Math.round((distanceFromCenter - 1)*halfsize);
-
-                    bitmap.data[offset + 3] = 255*((smoothBorder-distance)/smoothBorder); // transparency
-                  }else{
-                    bitmap.data[offset + 3] = 255; // no transparency
-                  }
-                };
-              }else if(this.shape === 'huebox'){
-                var saturation = x/width;
-                var hue = Math.round(this.hue*1000)/1000*360;
-                var third = 1-y/this.size;
-                if(this.type === 'hsv'){
-                  var color = hsv2rgb(hue, saturation, third);
-                }else if(this.type === 'hsl'){
-                  var color = hsl2rgb(hue, saturation, third);
+                  bitmap.data[offset + 3] = 255; // no transparency
                 }
-                bitmap.data[offset + 0] = color[0];
-                bitmap.data[offset + 1] = color[1];
-                bitmap.data[offset + 2] = color[2];
-                bitmap.data[offset + 3] = 255; // no transparency
-              }else if(this.shape === 'square'){
-                var hue = x/width*360;
-                var saturation = 1-y/this.size;
-                if(this.type === 'hsv'){
-                  var value = Math.round(this.value*1000)/1000;
-                  var color = hsv2rgb(hue, saturation, value);
-                }else if(this.type === 'hsl'){
-                  var lightness = Math.round(this.lightness*1000)/1000;
-                  var color = hsl2rgb(hue, saturation, lightness);
-                }
-                bitmap.data[offset + 0] = color[0];
-                bitmap.data[offset + 1] = color[1];
-                bitmap.data[offset + 2] = color[2];
-                bitmap.data[offset + 3] = 255; // no transparency
-              }
 
+              };
             };
-          };
-          this._ctx.putImageData(bitmap, 0, 0);
-          if(this.AaBorder && this.shape === 'circle'){
-            //Getting a nice anti aliased edge using canvas is hard, so instead a white circle is draw over the border
-            this.drawAACircle();
-          }
+            this._ctx.putImageData(bitmap, 0, 0);
+            if(!this.noAaBorder && this.shape === 'circle'){
+              //Getting a nice anti aliased edge using canvas is hard, so instead a white circle is draw over the border
+              this.drawAACircle();
+            }
+          });
         },
         drawAACircle: function(){
           if(this.colouredAaBorder){
@@ -450,8 +430,8 @@
             if(!isNaN(hsv[0])) this.hue = hsv[0];
             this.value = hsv[2];
           }
-          if(this._domReady)
-            this.redraw();
+          //if(this._domReady)
+          //  this.redraw();
         },
         attached: function(){
           this._domReady = true;
