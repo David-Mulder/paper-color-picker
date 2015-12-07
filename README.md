@@ -20,4 +20,4 @@ Installation
 
 Install with `bower` using
 
-   bower install --save paper-color-picker
+    bower install --save paper-color-picker
