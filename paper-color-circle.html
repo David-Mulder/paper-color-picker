@@ -178,8 +178,7 @@
               red: undefined,
               green: undefined,
               blue: undefined
-            },
-            observer: 'colorChanged'
+            }
           },
           /**
            * A coloured AA border can be drawn to prevent jagged edges on circles
@@ -277,6 +276,9 @@
             observer: 'valueChanged'
           }
         },
+        observers: [
+          'colorChanged(color.*)'
+        ],
         pickColor: function(e){
           var rect = this.getBoundingClientRect();
           var touchX = e.detail.x - rect.left;
@@ -422,11 +424,11 @@
         },
         colorChanged: function(){
           if(this.type == 'hsl'){
-            var hsl = this.rgb2hsl(this.color.red, this.color.green, this.color.blue);
+            var hsl = this.rgb2hsl(parseInt(this.color.red), parseInt(this.color.green), parseInt(this.color.blue));
             this.hue = hsl[0];
             this.lightness = hsl[2];
           }else if(this.type == 'hsv'){
-            var hsv= this.rgb2hsv(this.color.red, this.color.green, this.color.blue);
+            var hsv = this.rgb2hsv(parseInt(this.color.red), parseInt(this.color.green), parseInt(this.color.blue));
             if(!isNaN(hsv[0])) this.hue = hsv[0];
             this.value = hsv[2];
           }
