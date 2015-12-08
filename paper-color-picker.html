@@ -152,6 +152,8 @@ and to open the dialog
       }
 
       #dialog {
+        width: 90%;
+        max-width: 350px;
         flex-direction: column;
       }
       #title{
@@ -225,7 +227,7 @@ and to open the dialog
         <template is="dom-if" if="{{_showHuePicker(shape)}}">
           <paper-input-container attr-for-value="id">
             <label>Hue</label>
-            <canvas id="huePicker" class="paper-input-input" on-tap="huePickerPickColor" width="360" height="1"></canvas>
+            <canvas id="huePicker" class="paper-input-input" on-tap="huePickerPickColor" on-track="huePickerPickColor" width="360" height="1"></canvas>
           </paper-input-container>
           <!--<paper-slider id="hueSlider" min="0" max="100" value="50" immediate-value="{{sliderHue}}"></paper-slider>-->
         </template>
@@ -411,16 +413,25 @@ and to open the dialog
           }
           this.async(function(){
             if(this._isColorDefined()){
-              console.log(this.color);
               if(this.allowAlpha && typeof this.color.alpha !== 'undefined'){
                 this._initialAlphaValueHack = this.color.alpha;
-                //Polymer.dom(this.root).querySelector("#alphaPicker").set('value', this.color.alpha);
               }else{
                 this._initialAlphaValueHack = 1;
               }
-              this._initialAlphaValueHackApplied = true;
+            }else if(this._isImmediateColorDefined()){
+              if(this.allowAlpha && typeof this.immediateColor.alpha !== 'undefined'){
+                this._initialAlphaValueHack = this.immediateColor.alpha;
+              }else{
+                this._initialAlphaValueHack = 1;
+              }
+            }else{
+              this._initialAlphaValueHack = 1;
             }
+            this._initialAlphaValueHackApplied = true;
           });
+          window.addEventListener('resize', function(){
+            this.$.dialog.resetFit();
+          }.bind(this));
         },
         _and: function(a,b){
           return a && b;
@@ -430,6 +441,9 @@ and to open the dialog
         },
         _isColorDefined: function(){
           return this.color.red >= 0 && this.color.green >= 0 && this.color.blue >= 0;
+        },
+        _isImmediateColorDefined: function(){
+          return this.immediateColor.red >= 0 && this.immediateColor.green >= 0 && this.immediateColor.blue >= 0;
         },
         setColorWheel: function(){
           if (!this.disableUpdate){
@@ -507,7 +521,8 @@ and to open the dialog
         huePickerPickColor: function(e){
           var rect = Polymer.dom(this.root).querySelector('#huePicker').getBoundingClientRect();
           var percentage = (e.detail.x - rect.left) / rect.width;
-          this.colorHue = percentage;
+          if(percentage > 0 && percentage < 1)
+            this.colorHue = percentage;
         },
         changeColorMixture: function(){
           var red = this.$.redField.value;

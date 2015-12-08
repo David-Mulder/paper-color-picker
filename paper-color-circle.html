@@ -1,38 +1,36 @@
 <link href="../polymer/polymer.html" rel="import">
 <link href="../paper-ripple/paper-ripple.html" rel="import">
+<link href="../iron-resizable-behavior/iron-resizable-behavior.html" rel="import">
 
 <dom-module id="paper-color-circle">
-  <style>
-    :host {
-      display: inline-block;
-      position: relative;
-    }
-    canvas{
-      width: 100%;
-      height: 100%;
-      min-width: 100px;
-      min-height: 100px;
-      cursor: crosshair;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      -khtml-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
-    #ripple{
-      position: absolute;
-      left: 0px;
-      top: 0px;
-      bottom: 0px;
-      right: 0px;
-      pointer-events: none;
-    }
-  </style>
   <template>
-  <paper-ripple id="ripple" class$="{{shape}}" recenters noink></paper-ripple>
-  <canvas id="canvas" on-down="onDown" on-up="onUp" on-track="onMove"></canvas>
-</template>
+    <style>
+      :host {
+        display: inline-block;
+        position: relative;
+      }
+      canvas{
+        min-width: 100px;
+        min-height: 100px;
+        cursor: crosshair;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+      #rippleContainer{
+        position: relative;
+        margin: auto;
+      }
+    </style>
+
+    <div id="rippleContainer">
+      <canvas id="canvas" on-down="onDown" on-up="onUp" on-track="onMove"></canvas>
+      <paper-ripple id="ripple" class$="{{shape}}" recenters noink></paper-ripple>
+    </div>
+  </template>
   <script>
     (function(){
       function hsv2rgb(h, s, v){
@@ -279,6 +277,12 @@
         observers: [
           'colorChanged(color.*)'
         ],
+        behaviors: [
+          Polymer.IronResizableBehavior
+        ],
+        listeners: {
+          'iron-resize': 'redraw'
+        },
         pickColor: function(e){
           var rect = this.getBoundingClientRect();
           var touchX = e.detail.x - rect.left;
@@ -316,9 +320,12 @@
               width = parseInt(computedStyle.width);
               height = parseInt(computedStyle.height);
             }
-            this.$.canvas.width = width;
-            this.$.canvas.height = height;
             this.size = Math.min(width, height);
+            this.$.canvas.width = this.size;
+            this.$.canvas.height = this.size;
+            this.$.rippleContainer.style.width = this.size + 'px';
+            this.$.rippleContainer.style.height = this.size + 'px';
+
             var halfsize = this.size/2;
             var bitmap = this._ctx.getImageData(0, 0, this.size, this.size);
             var smoothBorder = 0;
@@ -403,7 +410,7 @@
           } else {
             this.set('_ctx.strokeStyle', 'rgb(255,255,255)');
           }
-          this.set('_ctx.lineWidth', 2);
+          this.set('_ctx.lineWidth', this.size/100);
           this._ctx.beginPath();
           var borderRadius = this.size / 2;
           this._ctx.arc(this.size / 2, this.size / 2, borderRadius - 1, 0, 2 * Math.PI, false);
