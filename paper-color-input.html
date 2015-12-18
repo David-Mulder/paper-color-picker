@@ -72,7 +72,7 @@ There are three different main configurations all 3 elements allow: `circle`, `s
 				<span>{{colorName}}</span>&nbsp;<!--
 				--><template is="dom-if" if="{{withDescription}}"><!--
 					--><span class="light">rgb<template is="dom-if" if="{{allowAlpha}}">a</template>(</span><span class="dark">{{value.red}}</span><span class="light">, </span><span class="dark">{{value.green}}</span><span class="light">, </span><span class="dark">{{value.blue}}</span><template is="dom-if" if="{{allowAlpha}}"><span class="light">, </span><span class="dark">{{value.alpha}}</span></template><span class="light">)</span>
-				</template>
+			</template>
 			</div>
 			<div id="colorPreview" suffix>
 				<div id="color" style$="{{_computeBackgroundColor(value.*)}}"></div>
@@ -220,10 +220,12 @@ There are three different main configurations all 3 elements allow: `circle`, `s
 				});
 
 				var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-				console.log(this.valueAsHex, hex, result);
-				this.set('value.r', parseInt(result[1], 16));
-				this.set('value.g', parseInt(result[2], 16));
-				this.set('value.b', parseInt(result[3], 16));
+				if(typeof this.value === 'undefined'){
+					this.set('value', {});
+				}
+				this.set('value.red', parseInt(result[1], 16));
+				this.set('value.green', parseInt(result[2], 16));
+				this.set('value.blue', parseInt(result[3], 16));
 			}
 		});
 	</script>
