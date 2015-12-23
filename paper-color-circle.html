@@ -321,8 +321,8 @@
         redraw: function(){
           this.debounce('redraw', function(){
             var size = this.getBoundingClientRect();
-            var width = size.width;
-            var height = size.height;
+            var width = Math.floor(size.width);
+            var height = Math.floor(size.height);
             if(width == 0 || height == 0){
               var computedStyle = window.getComputedStyle(this);
               width = parseInt(computedStyle.width);
