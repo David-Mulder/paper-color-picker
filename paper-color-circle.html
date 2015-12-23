@@ -321,14 +321,14 @@
         redraw: function(){
           this.debounce('redraw', function(){
             var size = this.getBoundingClientRect();
-            var width = Math.floor(size.width);
-            var height = Math.floor(size.height);
+            var width = size.width;
+            var height = size.height;
             if(width == 0 || height == 0){
               var computedStyle = window.getComputedStyle(this);
               width = parseInt(computedStyle.width);
               height = parseInt(computedStyle.height);
             }
-            this.size = Math.min(width, height);
+            this.size =  Math.floor(Math.min(width, height));
             this.$.canvas.width = this.size;
             this.$.canvas.height = this.size;
             this.$.rippleContainer.style.width = this.size + 'px';
