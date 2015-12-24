@@ -328,7 +328,7 @@
               width = parseInt(computedStyle.width);
               height = parseInt(computedStyle.height);
             }
-            this.size = Math.min(width, height);
+            this.size =  Math.floor(Math.min(width, height));
             this.$.canvas.width = this.size;
             this.$.canvas.height = this.size;
             this.$.rippleContainer.style.width = this.size + 'px';
