@@ -541,6 +541,7 @@ and to open the dialog
           this.set('color.blue', this.immediateColor.blue);
           this.set('color.alpha', this.immediateColor.alpha);
           this.set('colorAsString', this.immediateColorAsString);
+          this.fire('input');
         },
         open: function(){
           if (this.color && this.color['green'])
