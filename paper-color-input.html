@@ -172,15 +172,16 @@ There are three different main configurations all 3 elements allow: `circle`, `s
 				'input.tap': 'openColorPicker'
 			},
 			// Element Lifecycle
-			ready: function() {
+			attached: function() {
 				if(this._isValueDefined()){
-					this.$.picker.set('immediateColor', this.value);
 					var listenOnce;
 					this.$.picker.addEventListener('immediate-color-as-string-changed', listenOnce = function(){
 						//this.colorName = this.$.picker.immediateColorAsString;
 						this.$.picker.setColor();
 						this.$.picker.removeEventListener('immediate-color-as-string-changed', listenOnce);
 					}.bind(this));
+
+					this.$.picker.set('immediateColor', this.value);
 				}
 			},
 			openColorPicker: function(){
