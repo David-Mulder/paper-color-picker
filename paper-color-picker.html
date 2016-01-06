@@ -544,7 +544,7 @@ and to open the dialog
         },
         open: function(){
           if (this.color && this.color['green'])
-            this.immediateColor = this.color;
+            this.immediateColor = JSON.parse(JSON.stringify(this.color));
           this.immediateColorChanged();
           this.$.dialog.open();
           if (this._showHuePicker())

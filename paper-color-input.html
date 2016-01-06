@@ -181,7 +181,7 @@ There are three different main configurations all 3 elements allow: `circle`, `s
 						this.$.picker.removeEventListener('immediate-color-as-string-changed', listenOnce);
 					}.bind(this));
 
-					this.$.picker.set('immediateColor', this.value);
+					this.$.picker.set('immediateColor', JSON.parse(JSON.stringify(this.value)));
 				}
 			},
 			openColorPicker: function(){
