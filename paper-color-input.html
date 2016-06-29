@@ -214,6 +214,10 @@ There are three different main configurations all 3 elements allow: `circle`, `s
 			},
 			_setValueFromHex: function(){
 				var hex = this.valueAsHex;
+				if (typeof hex != 'string') {
+				  this.set('value', {});
+				  return;
+				}
 				var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
 				var hex = hex.replace(shorthandRegex, function(m, r, g, b) {
 					return r + r + g + g + b + b;
