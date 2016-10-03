@@ -203,7 +203,7 @@ There are three different main configurations all 3 elements allow: `circle`, `s
 					var hex = '#';
 					var value = this.value;
 					['red', 'green', 'blue'].forEach(function(c){
-						var h = value[c].toString(16);
+						var h = parseInt(value[c], 10).toString(16);
 						l = h.length;
 						hex += l < 2 ? '0' : '';
 						hex += l < 1 ? '0' : '';
